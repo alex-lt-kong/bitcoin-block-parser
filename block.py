@@ -34,14 +34,17 @@ class Block:
 		self.txCount = 0
 		self.Txs = []
 
-		if self.hasLength(blockchain, 8):	
+		if self.has_length(blockchain, 8):	
 			self.magicNum = uint4(blockchain)
+			# If you unpack bytes F9 BE in dat file you get the magic number 0XD9B4BEF9
+			# magic number is also used to confirm the start of a block
 			self.blocksize = uint4(blockchain)
 		else:
+			# If has_length() returns false, there is no next block in the file
 			self.continue_parsing = False
 			return
 		
-		if self.hasLength(blockchain, self.blocksize):
+		if self.has_length(blockchain, self.blocksize):
 			self.setHeader(blockchain)
 			self.txCount = varint(blockchain)
 			self.Txs = []
@@ -60,16 +63,19 @@ class Block:
 	def getBlocksize(self):
 		return self.blocksize
 
-	def hasLength(self, blockchain, size):
-		curPos = blockchain.tell()
-		blockchain.seek(0, 2)
-		
-		fileSize = blockchain.tell()
-		blockchain.seek(curPos)
+	def has_length(self, blockchain, size):
+		cur_pos = blockchain.tell()
+		# tell(): Return the current stream position as an opaque number.
+		# The number does not usually represent a number of bytes in the underlying binary storage.
 
-		tempBlockSize = fileSize - curPos
-#		print "tempBlockSize \t %d" % tempBlockSize
-		if tempBlockSize < size:
+		blockchain.seek(0, io.SEEK_END)		
+		file_size = blockchain.tell()
+		blockchain.seek(cur_pos, io.SEEK_SET)
+
+		# if means that if the remaining size is too small,
+		# the method returns False
+		temp_block_size = file_size - cur_pos
+		if temp_block_size < size:
 			return False
 		return True
 
@@ -78,10 +84,10 @@ class Block:
 
 	def toString(self):
 		print("")
-		print(f"Magic No/魔法數字: \t{hex(self.magicNum).upper()}") 
+		print(f"Magic No/魔法數字: \t\t\t{hex(self.magicNum).upper()}") 
 		assert hex(self.magicNum).upper() == "0XD9B4BEF9"
 		# seems this is something hard-coded		
-		print(f"Blocksize: \t{self.blocksize}")
+		print(f"Blocksize (bytes)/区块大小（字节）: \t{self.blocksize}")
 		print("")
 		print("#"*10 + " Block Header/区块头 " + "#"*10)
 		self.blockHeader.toString()

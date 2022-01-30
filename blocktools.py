@@ -11,7 +11,9 @@ def uint2(stream):
 def uint4(stream: io.BufferedReader):
 	assert isinstance(stream, io.BufferedReader)
 	return struct.unpack('I', stream.read(4))[0]
+	# format string 'I' means unsigned int
 	# io.BufferedReader.read(): Read and return size bytes, or...
+	# So here we read 4 bytes from the stream and treat it as an unsigned integer.
 
 def uint8(stream):
 	return struct.unpack('Q', stream.read(8))[0]
