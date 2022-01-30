@@ -1,6 +1,8 @@
 from blocktools import *
 from opcode import *
 from datetime import datetime
+
+import io
 import time
 
 class BlockHeader:
@@ -23,8 +25,9 @@ class BlockHeader:
 		return utc_time.strftime("%Y-%m-%d %H:%M:%S.%f+00:00 (UTC)")
 
 class Block:
-	def __init__(self, blockchain):
-		self.continueParsing = True
+	def __init__(self, blockchain: io.BufferedReader):
+		assert isinstance(blockchain, io.BufferedReader)
+		self.continue_parsing = True
 		self.magicNum = 0
 		self.blocksize = 0
 		self.blockheader = ''
@@ -35,7 +38,7 @@ class Block:
 			self.magicNum = uint4(blockchain)
 			self.blocksize = uint4(blockchain)
 		else:
-			self.continueParsing = False
+			self.continue_parsing = False
 			return
 		
 		if self.hasLength(blockchain, self.blocksize):
@@ -48,11 +51,11 @@ class Block:
 				tx.seq = i 
 				self.Txs.append(tx)
 		else:
-			self.continueParsing = False
+			self.continue_parsing = False
 						
 
-	def continueParsing(self):
-		return self.continueParsing
+	def continue_parsing(self):
+		return self.continue_parsing
 
 	def getBlocksize(self):
 		return self.blocksize
@@ -75,10 +78,12 @@ class Block:
 
 	def toString(self):
 		print("")
-		print(f"Magic No: \t{self.magicNum} (ak note: this format string may need extra work)")
+		print(f"Magic No/魔法數字: \t{hex(self.magicNum).upper()}") 
+		assert hex(self.magicNum).upper() == "0XD9B4BEF9"
+		# seems this is something hard-coded		
 		print(f"Blocksize: \t{self.blocksize}")
 		print("")
-		print("#"*10 + " Block Header " + "#"*10)
+		print("#"*10 + " Block Header/区块头 " + "#"*10)
 		self.blockHeader.toString()
 		print 
 		print(f"##### Tx Count: {self.txCount}")

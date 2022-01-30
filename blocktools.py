@@ -1,3 +1,4 @@
+import io
 import struct
 
 
@@ -7,8 +8,10 @@ def uint1(stream):
 def uint2(stream):
 	return struct.unpack('H', stream.read(2))[0]
 
-def uint4(stream):
+def uint4(stream: io.BufferedReader):
+	assert isinstance(stream, io.BufferedReader)
 	return struct.unpack('I', stream.read(4))[0]
+	# io.BufferedReader.read(): Read and return size bytes, or...
 
 def uint8(stream):
 	return struct.unpack('Q', stream.read(8))[0]

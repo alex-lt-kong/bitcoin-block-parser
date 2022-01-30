@@ -21,11 +21,15 @@ def parse(blockchain: io.BufferedReader, block_no: int):
 	# SEEK_SET: seek from the start of the stream position
 	while continue_parsing:	
 		block = Block(blockchain)
-		continue_parsing = block.continueParsing
+		continue_parsing = block.continue_parsing
+		counter += 1
+		print(f"#################### Block counter No. {counter} BEGIN" \
+		      f"/第{counter}号区块开始 ####################")
 		if continue_parsing:
 			block.toString() # print the block as well
-		counter += 1
-		print("#################### Block counter No. {counter} ####################")
+		
+		print(f"#################### Block counter No. {counter} END" \
+		      f"/第{counter}号区块结束 ####################\n")
 		if counter >= block_no and block_no != 0xFF:
 			continue_parsing = False
 
