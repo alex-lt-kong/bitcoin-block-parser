@@ -1,25 +1,33 @@
 #!/usr/bin/python3
 
-import sys
 from blocktools import *
 from block import Block, BlockHeader
 
-def parse(blockchain, blkNo):
+import io
+import sys
+
+
+
+def parse(blockchain: io.BufferedReader, block_no: int):
+	assert isinstance(blockchain, io.BufferedReader)
 	print('Parsing Block Chain block head, transaction etc.')
-	continueParsing = True
+	continue_parsing = True
 	counter = 0
-	blockchain.seek(0, 2)
+	blockchain.seek(0, io.SEEK_END)
+	# SEEK_END: seek from end and offset is 0,
+	# so it just means we set the stream position to the end
 	fSize = blockchain.tell() - 80 #Minus last Block header size for partial file
-	blockchain.seek(0, 0)
-	while continueParsing:	
+	blockchain.seek(0, io.SEEK_SET)
+	# SEEK_SET: seek from the start of the stream position
+	while continue_parsing:	
 		block = Block(blockchain)
-		continueParsing = block.continueParsing
-		if continueParsing:
-			block.toString()
-		counter+=1
-		print("#"*20+"Block counter No. %s"%counter +"#"*20)
-		if counter >= blkNo and blkNo != 0xFF:
-			continueParsing = False
+		continue_parsing = block.continueParsing
+		if continue_parsing:
+			block.toString() # print the block as well
+		counter += 1
+		print("#################### Block counter No. {counter} ####################")
+		if counter >= block_no and block_no != 0xFF:
+			continue_parsing = False
 
 	print('')
 	print('Reached End of Field')
@@ -27,14 +35,14 @@ def parse(blockchain, blkNo):
 
 def main():
 	if len(sys.argv) < 2:
-		print('Usage: sight.py filename')
+		print('Usage: sight.py filename [N]')
 	else:
-		blkNo = 0xFF
+		block_no = 0xFF #255
 		if(len(sys.argv) == 3):
-			blkNo = int(sys.argv[2])
-			print(f"Parsing {blkNo} blocks")
+			block_no = int(sys.argv[2])
+			print(f"Parsing {block_no} blocks")
 		with open(sys.argv[1], 'rb') as blockchain:
-			parse(blockchain,blkNo)
+			parse(blockchain, block_no)
 
 
 
