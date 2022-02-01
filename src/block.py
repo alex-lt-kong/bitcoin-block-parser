@@ -101,7 +101,9 @@ class Block:
 
 
 class Transaction:
-	def __init__(self, blockchain):
+	def __init__(self, blockchain: io.BufferedReader):
+		assert isinstance(blockchain, io.BufferedReader)
+		cur_pos = blockchain.tell()
 		self.version = uint4(blockchain)
 		self.input_count = varint(blockchain)
 		self.inputs = []
@@ -116,6 +118,7 @@ class Transaction:
 				output = txOutput(blockchain)
 				self.outputs.append(output)	
 		self.lockTime = uint4(blockchain)
+
 		
 	def toString(self):
 		print(f"    ##### Transactions[{self.seq}] #####")
@@ -130,7 +133,8 @@ class Transaction:
 		print(f"        Lock Time:\t {self.lockTime}")
 
 class txInput:
-	def __init__(self, blockchain):
+	def __init__(self, blockchain: io.BufferedReader):
+		assert isinstance(blockchain, io.BufferedReader)
 		self.prev_transaction_hash = hash32(blockchain)
 		self.txOutId = uint4(blockchain)
 		self.script_length = varint(blockchain)
