@@ -8,18 +8,19 @@ import time
 class BlockHeader:
 	def __init__(self, blockchain):
 		self.version = uint4(blockchain)
-		self.previousHash = hash32(blockchain)
+		self.previous_block_hash = hash32(blockchain)
 		self.merkleHash = hash32(blockchain)
+		# the Merkle root is the hash of all the hashes of all the transactions in the block. 
 		self.time = uint4(blockchain)
 		self.bits = uint4(blockchain)
 		self.nonce = uint4(blockchain)
 	def toString(self):
-		print(f"Version:\t {self.version}")
-		print(f"Previous Hash\t {hashStr(self.previousHash)}")
-		print(f"Merkle Root\t {hashStr(self.merkleHash)}")
-		print(f"Time stamp\t {self.decodeTime(self.time)}")
-		print(f"Difficulty\t {self.bits}")
-		print(f"Nonce\t\t {self.nonce}")
+		print(f"Version/版本\t\t\t\t {self.version}")
+		print(f"Previous Block Hash/前一区块哈希值\t {hashStr(self.previous_block_hash)}")
+		print(f"Merkle Root/默克尔根\t\t\t {hashStr(self.merkleHash)}")
+		print(f"Time stamp/时间戳\t\t\t {self.decodeTime(self.time)}")
+		print(f"Difficulty/难度值\t\t\t {self.bits}")
+		print(f"Nonce/一次性数字\t\t\t {self.nonce}")
 	def decodeTime(self, time):
 		utc_time = datetime.utcfromtimestamp(time)
 		return utc_time.strftime("%Y-%m-%d %H:%M:%S.%f+00:00 (UTC)")
@@ -31,8 +32,8 @@ class Block:
 		self.magicNum = 0
 		self.blocksize = 0
 		self.blockheader = ''
-		self.txCount = 0
-		self.Txs = []
+		self.transaction_count = 0
+		self.transactions = []
 
 		if self.has_length(blockchain, 8):	
 			self.magicNum = uint4(blockchain)
@@ -45,14 +46,14 @@ class Block:
 			return
 		
 		if self.has_length(blockchain, self.blocksize):
-			self.setHeader(blockchain)
-			self.txCount = varint(blockchain)
-			self.Txs = []
+			self.set_header(blockchain)
+			self.transaction_count = varint(blockchain)
+			self.transactions = []
 
-			for i in range(0, self.txCount):
-				tx = Tx(blockchain)
-				tx.seq = i 
-				self.Txs.append(tx)
+			for i in range(0, self.transaction_count):
+				transaction = Transaction(blockchain)
+				transaction.seq = i 
+				self.transactions.append(transaction)
 		else:
 			self.continue_parsing = False
 						
@@ -79,7 +80,7 @@ class Block:
 			return False
 		return True
 
-	def setHeader(self, blockchain):
+	def set_header(self, blockchain):
 		self.blockHeader = BlockHeader(blockchain)
 
 	def toString(self):
@@ -89,21 +90,21 @@ class Block:
 		# seems this is something hard-coded		
 		print(f"Blocksize (bytes)/区块大小（字节）: \t{self.blocksize}")
 		print("")
-		print("#"*10 + " Block Header/区块头 " + "#"*10)
+		print("########## Block Header/区块头 ##########")
 		self.blockHeader.toString()
-		print 
-		print(f"##### Tx Count: {self.txCount}")
-		for t in self.Txs:
+		print(f"\n########## Transaction Count/交易笔数: {self.transaction_count} ##########\n")
+		print("########## Transaction Data/交易数据 ##########")
+		for t in self.transactions:
 			t.toString()
-		print(f"#### end of all {self.txCount} transactins")
 
-class Tx:
+
+class Transaction:
 	def __init__(self, blockchain):
 		self.version = uint4(blockchain)
-		self.inCount = varint(blockchain)
+		self.input_count = varint(blockchain)
 		self.inputs = []
 		self.seq = 1
-		for i in range(0, self.inCount):
+		for i in range(0, self.input_count):
 			input = txInput(blockchain)
 			self.inputs.append(input)
 		self.outCount = varint(blockchain)
@@ -116,9 +117,9 @@ class Tx:
 		
 	def toString(self):
 		print("")
-		print("="*20 + " No. %s " %self.seq + "Transaction " + "="*20)
-		print(f"Tx Version:\t {self.version}")
-		print(f"Inputs:\t\t {self.inCount}")
+		print(f"##### {self.seq}-th Transaction/第{self.seq}笔交易 #####")
+		print(f"Transaction Version/交易版本:\t {self.version}")
+		print(f"Input Count/输入计数:\t\t {self.input_count}")
 		for i in self.inputs:
 			i.toString()
 
@@ -129,19 +130,20 @@ class Tx:
 
 class txInput:
 	def __init__(self, blockchain):
-		self.prevhash = hash32(blockchain)
+		self.prev_transaction_hash = hash32(blockchain)
 		self.txOutId = uint4(blockchain)
-		self.scriptLen = varint(blockchain)
-		self.scriptSig = blockchain.read(self.scriptLen)
+		self.script_length = varint(blockchain)
+		self.scriptSig = blockchain.read(self.script_length)
 		self.seqNo = uint4(blockchain)
 
 	def toString(self):
 #		print "\tPrev. Tx Hash:\t %s" % hashStr(self.prevhash)
 		print(f"\tTx Out Index:\t {self.decodeOutIdx(self.txOutId)}")
-		print(f"\tScript Length:\t {self.scriptLen}")
-#		print "\tScriptSig:\t %s" % 
+		print(f"\tScript Length:\t {self.script_length}")
+		print(f"\tScriptSig:\t {self.scriptSig}") 
+	#	print(f"\tScriptSig:\t {self.scriptSig.decode('utf8')}") 
 		self.decodeScriptSig(self.scriptSig)
-		print(f"\tSequence:\t {self.seqNo} (ak note: formatting may need extra work)")
+		print(f"\tSequence:\t {self.seqNo:8x} (ak note: formatting may need extra work)")
 	def decodeScriptSig(self,data):
 		hexstr = hashStr(data)
 		if 0xffffffff == self.txOutId: #Coinbase
@@ -157,15 +159,17 @@ class txInput:
 			pubkey = hexstr[2+scriptLen+2:2+scriptLen+2+66]
 			print(" \tInPubkey:\t " + pubkey)
 #		return hexstr
+
 	def decodeOutIdx(self,idx):
 		s = ""
 		if(idx == 0xffffffff):
 			s = " Coinbase with special index"
-			print("\tCoinbase Text:\t %s" % hashStr(self.prevhash))
+			print("\tCoinbase Text:\t %s" % hashStr(self.prev_transaction_hash))
 		else: 
-			print("\tPrev. Tx Hash:\t %s" % hashStr(self.prevhash))
+			print("\tPrev. Transaction Hash/前一交易哈希值:\t %s" % hashStr(self.prev_transaction_hash))
 		return "%8x"%idx + s 
 		
+
 class txOutput:
 	def __init__(self, blockchain):	
 		self.value = uint8(blockchain)
@@ -178,11 +182,11 @@ class txOutput:
 		print("\tScriptPubkey:\t %s" % self.decodeScriptPubkey(self.pubkey))
 	def decodeScriptPubkey(self,data):
 		hexstr = hashStr(data)
-		op_idx = int(hexstr[0:2],16)
+		op_idx = int(hexstr[0:2], base=16)
 		try: 
 			op_code1 = OPCODE_NAMES[op_idx]
 		except KeyError: #Obselete pay to pubkey directly 
-			print(" \tOP_CODE %d is probably obselete pay to address")
+			print(f"\tOP_CODE {op_idx} is probably obselete pay to address")
 			keylen = op_idx
 			op_codeTail = OPCODE_NAMES[int(hexstr[2+keylen*2:2+keylen*2+2],16)]
 			print(" \tPubkey OP_CODE:\t " "None " + "Bytes:%d " % keylen +\

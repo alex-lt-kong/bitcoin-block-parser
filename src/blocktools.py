@@ -26,17 +26,27 @@ def time(stream):
 	return time
 
 def varint(stream):
+	# seems the rule is like this:
+	# * If the number < 253 (0xFD), store it in 1 byte, left-padded with zeros.
+  # * If the number fits in 16 bits (but is greater than 252), store it in 3 
+	#   bytes: a 1-byte value 253 (0xFD) followed by the 2 byte little-endian number.
+  # * If the number fits in 32 bits (but not 8 or 16), store it in 5 bytes: 
+	#   a 1-byte value 254 (0xFE) followed by the 4 byte little-endian number
+	# * If the number fits in 64 bits (but not 8, 16, or 32), store it in 9 bytes:
+	#   a 1-byte value 255 (0xFF) followed by the 8 byte little-endian number
+	# reference: https://reference.cash/protocol/formats/variable-length-integer
 	size = uint1(stream)
 
-	if size < 0xfd:
+	if size < 0xfd: # decimal 253, binary 11111101
 		return size
-	if size == 0xfd:
+	if size == 0xfd: # decimal 253, binary 11111101
 		return uint2(stream)
-	if size == 0xfe:
+	if size == 0xfe: # decimal 254, binary 11111110
 		return uint4(stream)
-	if size == 0xff:
+	if size == 0xff: # decimal 255, binary 11111111
 		return uint8(stream)
-	return -1
+	raise ValueError('Datafile seems corrupt')
+
 
 def hashStr(bytebuffer):
 	return bytebuffer.hex().upper()
