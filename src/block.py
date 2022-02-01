@@ -15,12 +15,12 @@ class BlockHeader:
 		self.bits = uint4(blockchain)
 		self.nonce = uint4(blockchain)
 	def toString(self):
-		print(f"Version/版本\t\t\t\t {self.version}")
-		print(f"Previous Block Hash/前一区块哈希值\t {hashStr(self.previous_block_hash)}")
-		print(f"Merkle Root/默克尔根\t\t\t {hashStr(self.merkleHash)}")
-		print(f"Time stamp/时间戳\t\t\t {self.decodeTime(self.time)}")
-		print(f"Difficulty/难度值\t\t\t {self.bits}")
-		print(f"Nonce/一次性数字\t\t\t {self.nonce}")
+		print(f"    Version               {self.version}")
+		print(f"    Previous Block Hash   {hashStr(self.previous_block_hash)}")
+		print(f"    Merkle Root           {hashStr(self.merkleHash)}")
+		print(f"    Time stamp            {self.decodeTime(self.time)}")
+		print(f"    Difficulty            {difficulty(self.bits):.2f} ({self.bits} bits)")
+		print(f"    Nonce                 {self.nonce}")
 	def decodeTime(self, time):
 		utc_time = datetime.utcfromtimestamp(time)
 		return utc_time.strftime("%Y-%m-%d %H:%M:%S.%f+00:00 (UTC)")
@@ -85,17 +85,19 @@ class Block:
 
 	def toString(self):
 		print("")
-		print(f"Magic No/魔法數字: \t\t\t{hex(self.magicNum).upper()}") 
+		print(f"  Magic No: \t\t\t{hex(self.magicNum).upper()}") 
 		assert hex(self.magicNum).upper() == "0XD9B4BEF9"
 		# seems this is something hard-coded		
-		print(f"Blocksize (bytes)/区块大小（字节）: \t{self.blocksize}")
+		print(f"  Blocksize (bytes): \t{self.blocksize}")
 		print("")
-		print("########## Block Header/区块头 ##########")
+		print("  ########## Block Header BEGIN ##########")
 		self.blockHeader.toString()
-		print(f"\n########## Transaction Count/交易笔数: {self.transaction_count} ##########\n")
-		print("########## Transaction Data/交易数据 ##########")
+		print("  ########## Block Header END ##########\n")
+		print(f"  ########## Transaction Count: {self.transaction_count} ##########\n")
+		print("  ########## Transaction Data BEGIN ##########")
 		for t in self.transactions:
 			t.toString()
+		print("  ########## Transaction Data END ##########")
 
 
 class Transaction:
@@ -116,17 +118,16 @@ class Transaction:
 		self.lockTime = uint4(blockchain)
 		
 	def toString(self):
-		print("")
-		print(f"##### {self.seq}-th Transaction/第{self.seq}笔交易 #####")
-		print(f"Transaction Version/交易版本:\t {self.version}")
-		print(f"Input Count/输入计数:\t\t {self.input_count}")
+		print(f"    ##### Transactions[{self.seq}] #####")
+		print(f"      Transaction Version:\t {self.version}")
+		print(f"      Input Count:\t\t {self.input_count}")
 		for i in self.inputs:
 			i.toString()
 
-		print(f"Outputs:\t {self.outCount}")
+		print(f"      Output Count:\t {self.outCount}")
 		for o in self.outputs:
 			o.toString()
-		print(f"Lock Time:\t {self.lockTime}")
+		print(f"        Lock Time:\t {self.lockTime}")
 
 class txInput:
 	def __init__(self, blockchain):
@@ -138,12 +139,14 @@ class txInput:
 
 	def toString(self):
 #		print "\tPrev. Tx Hash:\t %s" % hashStr(self.prevhash)
-		print(f"\tTx Out Index:\t {self.decodeOutIdx(self.txOutId)}")
-		print(f"\tScript Length:\t {self.script_length}")
-		print(f"\tScriptSig:\t {self.scriptSig}") 
+		print(f"        Transaction Out Index:\t{self.decodeOutIdx(self.txOutId)}")
+		print(f"        Script Length:\t {self.script_length}")
+	#	print(f"\tScriptSig:\t {self.scriptSig}") 
 	#	print(f"\tScriptSig:\t {self.scriptSig.decode('utf8')}") 
 		self.decodeScriptSig(self.scriptSig)
-		print(f"\tSequence:\t {self.seqNo:8x} (ak note: formatting may need extra work)")
+		assert self.seqNo == 4294967295
+		print(f"        Sequence:\t {self.seqNo} (== ffffffff, not in use)")
+
 	def decodeScriptSig(self,data):
 		hexstr = hashStr(data)
 		if 0xffffffff == self.txOutId: #Coinbase
@@ -151,23 +154,23 @@ class txInput:
 		scriptLen = int(hexstr[0:2],16)
 		scriptLen *= 2
 		script = hexstr[2:2+scriptLen] 
-		print(f"\tScript:\t\t {script}")
+		print(f"        Script:\t\t {script}")
 		if SIGHASH_ALL != int(hexstr[scriptLen:scriptLen+2],16): # should be 0x01
 			print("\t Script op_code is not SIGHASH_ALL")
 			return hexstr
 		else: 
 			pubkey = hexstr[2+scriptLen+2:2+scriptLen+2+66]
-			print(" \tInPubkey:\t " + pubkey)
+			print("        InPubkey:\t " + pubkey)
 #		return hexstr
 
 	def decodeOutIdx(self,idx):
 		s = ""
 		if(idx == 0xffffffff):
 			s = " Coinbase with special index"
-			print("\tCoinbase Text:\t %s" % hashStr(self.prev_transaction_hash))
+			print("        Coinbase Text:\t%s" % hashStr(self.prev_transaction_hash))
 		else: 
-			print("\tPrev. Transaction Hash/前一交易哈希值:\t %s" % hashStr(self.prev_transaction_hash))
-		return "%8x"%idx + s 
+			print("        Prev. Transaction Hash:\t%s" % hashStr(self.prev_transaction_hash))
+		return f"{int(idx)} {s}"
 		
 
 class txOutput:
@@ -177,21 +180,21 @@ class txOutput:
 		self.pubkey = blockchain.read(self.scriptLen)
 
 	def toString(self):
-		print("\tValue:\t\t %d" % self.value + " Satoshi")
-		print("\tScript Len:\t %d" % self.scriptLen)
-		print("\tScriptPubkey:\t %s" % self.decodeScriptPubkey(self.pubkey))
+		print("        Value:\t\t %d" % self.value + " Satoshi")
+		print("        Script Len:\t %d" % self.scriptLen)
+		print("        ScriptPubkey:\t %s" % self.decodeScriptPubkey(self.pubkey))
 	def decodeScriptPubkey(self,data):
 		hexstr = hashStr(data)
 		op_idx = int(hexstr[0:2], base=16)
 		try: 
 			op_code1 = OPCODE_NAMES[op_idx]
 		except KeyError: #Obselete pay to pubkey directly 
-			print(f"\tOP_CODE {op_idx} is probably obselete pay to address")
+			print(f"        OP_CODE {op_idx} is probably obselete pay to address")
 			keylen = op_idx
 			op_codeTail = OPCODE_NAMES[int(hexstr[2+keylen*2:2+keylen*2+2],16)]
-			print(" \tPubkey OP_CODE:\t " "None " + "Bytes:%d " % keylen +\
+			print("        Pubkey OP_CODE:\t " "None " + "Bytes:%d " % keylen +\
 					"tail_op_code:" +  op_codeTail + " " )
-			print("\tPure Pubkey:\t   %s" % hexstr[2:2+keylen*2])
+			print("        Pure Pubkey:\t   %s" % hexstr[2:2+keylen*2])
 			return hexstr
 		if op_code1 == "OP_DUP":  #P2PKHA pay to pubkey hash mode
 			op_code2 = OPCODE_NAMES[int(hexstr[2:4],16)] + " "

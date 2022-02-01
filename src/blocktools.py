@@ -1,6 +1,18 @@
 import io
 import struct
 
+def nbits(num):
+  # Convert integer to hex
+  hexstr = format(num, 'x')
+  first_byte, last_bytes = hexstr[0:2], hexstr[2:]
+  # convert bytes back to int
+  first, last = int(first_byte, 16), int(last_bytes, 16)
+  return last * 256 ** (first - 3)
+
+def difficulty(num):
+  # Difficulty of genesis block / current
+  return 0x00ffff0000000000000000000000000000000000000000000000000000 / nbits(num)
+
 
 def uint1(stream):
 	return ord(stream.read(1))

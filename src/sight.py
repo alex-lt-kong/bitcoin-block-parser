@@ -23,13 +23,11 @@ def parse(blockchain: io.BufferedReader, block_no: int):
 		block = Block(blockchain)
 		continue_parsing = block.continue_parsing
 		counter += 1
-		print(f"#################### Block counter No. {counter} BEGIN" \
-		      f"/第{counter}号区块开始 ####################")
+		print(f"#################### Blocks[{counter-1}] BEGIN ####################")
 		if continue_parsing:
 			block.toString() # print the block as well
 		
-		print(f"#################### Block counter No. {counter} END" \
-		      f"/第{counter}号区块结束 ####################\n")
+		print(f"#################### Blocks[{counter-1}] END ####################\n")
 		if counter >= block_no and block_no != 0xFF:
 			continue_parsing = False
 
