@@ -84,7 +84,7 @@ Parsing Block Chain block head, transaction etc.
         Script Len:            25
         Transaction Type:      Pay-to-PubkeyHash (P2PKH)
         PubkeyHash:            031442CD3126C9844106AD35A2A537AB10B0AC3C
-        Assembly:              OP_DUP OP_HASH160  <PubkeyHash>  OP_EQUALVERIFY OP_CHECKSIG
+        Assembly:              OP_DUP OP_HASH160  <PubkeyHash> OP_EQUALVERIFY OP_CHECKSIG
         ScriptPubkey(hex):     76A914031442CD3126C9844106AD35A2A537AB10B0AC3C88AC
         Lock Time:	 0
     ##### Transactions[2] #####
@@ -112,14 +112,14 @@ Parsing Block Chain block head, transaction etc.
         Script Len:            25
         Transaction Type:      Pay-to-PubkeyHash (P2PKH)
         PubkeyHash:            AFA41E39528B94614261387FA92D93EA3C175520
-        Assembly:              OP_DUP OP_HASH160  <PubkeyHash>  OP_EQUALVERIFY OP_CHECKSIG
+        Assembly:              OP_DUP OP_HASH160  <PubkeyHash> OP_EQUALVERIFY OP_CHECKSIG
         ScriptPubkey(hex):     76A914AFA41E39528B94614261387FA92D93EA3C17552088AC
       ## Outputs[1] ##
         Value:                 1,773,000,000 Satoshi (17.73 Bitcoin)
         Script Len:            25
         Transaction Type:      Pay-to-PubkeyHash (P2PKH)
         PubkeyHash:            F3D4F17708E5A9331F659826E069CE0310988207
-        Assembly:              OP_DUP OP_HASH160  <PubkeyHash>  OP_EQUALVERIFY OP_CHECKSIG
+        Assembly:              OP_DUP OP_HASH160  <PubkeyHash> OP_EQUALVERIFY OP_CHECKSIG
         ScriptPubkey(hex):     76A914F3D4F17708E5A9331F659826E069CE031098820788AC
         Lock Time:	 0
     ##### Transactions[3] #####
@@ -139,14 +139,14 @@ Parsing Block Chain block head, transaction etc.
         Script Len:            25
         Transaction Type:      Pay-to-PubkeyHash (P2PKH)
         PubkeyHash:            C8F9C8B653D1B1070A5C954C03D43E1BDD5345EF
-        Assembly:              OP_DUP OP_HASH160  <PubkeyHash>  OP_EQUALVERIFY OP_CHECKSIG
+        Assembly:              OP_DUP OP_HASH160  <PubkeyHash> OP_EQUALVERIFY OP_CHECKSIG
         ScriptPubkey(hex):     76A914C8F9C8B653D1B1070A5C954C03D43E1BDD5345EF88AC
       ## Outputs[1] ##
         Value:                 163,000,000 Satoshi (1.63 Bitcoin)
         Script Len:            25
         Transaction Type:      Pay-to-PubkeyHash (P2PKH)
         PubkeyHash:            D5D98DC7066FE9C9663D7FBB6BB550A91BDCC336
-        Assembly:              OP_DUP OP_HASH160  <PubkeyHash>  OP_EQUALVERIFY OP_CHECKSIG
+        Assembly:              OP_DUP OP_HASH160  <PubkeyHash> OP_EQUALVERIFY OP_CHECKSIG
         ScriptPubkey(hex):     76A914D5D98DC7066FE9C9663D7FBB6BB550A91BDCC33688AC
         Lock Time:	 0
     ##### Transactions[4] #####
@@ -166,14 +166,14 @@ Parsing Block Chain block head, transaction etc.
         Script Len:            25
         Transaction Type:      Pay-to-PubkeyHash (P2PKH)
         PubkeyHash:            AE45E63320ED3EF0EF4B2D40DF2389B7A9EF79FF
-        Assembly:              OP_DUP OP_HASH160  <PubkeyHash>  OP_EQUALVERIFY OP_CHECKSIG
+        Assembly:              OP_DUP OP_HASH160  <PubkeyHash> OP_EQUALVERIFY OP_CHECKSIG
         ScriptPubkey(hex):     76A914AE45E63320ED3EF0EF4B2D40DF2389B7A9EF79FF88AC
       ## Outputs[1] ##
         Value:                 1,005,000,000 Satoshi (10.05 Bitcoin)
         Script Len:            25
         Transaction Type:      Pay-to-PubkeyHash (P2PKH)
         PubkeyHash:            FD4569BA4EA0857A4626595686E61AD8930C77A7
-        Assembly:              OP_DUP OP_HASH160  <PubkeyHash>  OP_EQUALVERIFY OP_CHECKSIG
+        Assembly:              OP_DUP OP_HASH160  <PubkeyHash> OP_EQUALVERIFY OP_CHECKSIG
         ScriptPubkey(hex):     76A914FD4569BA4EA0857A4626595686E61AD8930C77A788AC
         Lock Time:	 0
     ##### Transactions[5] #####
@@ -217,14 +217,14 @@ Parsing Block Chain block head, transaction etc.
         Script Len:            25
         Transaction Type:      Pay-to-PubkeyHash (P2PKH)
         PubkeyHash:            D73DE087CEB9302E04C5AA93A5EFA3001A217C1A
-        Assembly:              OP_DUP OP_HASH160  <PubkeyHash>  OP_EQUALVERIFY OP_CHECKSIG
+        Assembly:              OP_DUP OP_HASH160  <PubkeyHash> OP_EQUALVERIFY OP_CHECKSIG
         ScriptPubkey(hex):     76A914D73DE087CEB9302E04C5AA93A5EFA3001A217C1A88AC
       ## Outputs[1] ##
         Value:                 8,878,000,000 Satoshi (88.78 Bitcoin)
         Script Len:            25
         Transaction Type:      Pay-to-PubkeyHash (P2PKH)
         PubkeyHash:            A6E38553E037B38E2E648993041E348E29675DA8
-        Assembly:              OP_DUP OP_HASH160  <PubkeyHash>  OP_EQUALVERIFY OP_CHECKSIG
+        Assembly:              OP_DUP OP_HASH160  <PubkeyHash> OP_EQUALVERIFY OP_CHECKSIG
         ScriptPubkey(hex):     76A914A6E38553E037B38E2E648993041E348E29675DA888AC
         Lock Time:	 0
     ##### Transactions[6] #####
@@ -244,14 +244,14 @@ Parsing Block Chain block head, transaction etc.
         Script Len:            25
         Transaction Type:      Pay-to-PubkeyHash (P2PKH)
         PubkeyHash:            1BBB55FF67C1DAB503705A80EF982D711B303E2A
-        Assembly:              OP_DUP OP_HASH160  <PubkeyHash>  OP_EQUALVERIFY OP_CHECKSIG
+        Assembly:              OP_DUP OP_HASH160  <PubkeyHash> OP_EQUALVERIFY OP_CHECKSIG
         ScriptPubkey(hex):     76A9141BBB55FF67C1DAB503705A80EF982D711B303E2A88AC
       ## Outputs[1] ##
         Value:                 1,615,000,000 Satoshi (16.15 Bitcoin)
         Script Len:            25
         Transaction Type:      Pay-to-PubkeyHash (P2PKH)
         PubkeyHash:            11982E686FFBB93609715F195398621B4266AA1D
-        Assembly:              OP_DUP OP_HASH160  <PubkeyHash>  OP_EQUALVERIFY OP_CHECKSIG
+        Assembly:              OP_DUP OP_HASH160  <PubkeyHash> OP_EQUALVERIFY OP_CHECKSIG
         ScriptPubkey(hex):     76A91411982E686FFBB93609715F195398621B4266AA1D88AC
         Lock Time:	 0
   ########## Transaction Data END ##########
@@ -309,14 +309,14 @@ Parsing Block Chain block head, transaction etc.
         Script Len:            25
         Transaction Type:      Pay-to-PubkeyHash (P2PKH)
         PubkeyHash:            53C32617316707BB8BA4E1546FA8C32BD212C86D
-        Assembly:              OP_DUP OP_HASH160  <PubkeyHash>  OP_EQUALVERIFY OP_CHECKSIG
+        Assembly:              OP_DUP OP_HASH160  <PubkeyHash> OP_EQUALVERIFY OP_CHECKSIG
         ScriptPubkey(hex):     76A91453C32617316707BB8BA4E1546FA8C32BD212C86D88AC
       ## Outputs[1] ##
         Value:                 800,000,000 Satoshi (8.0 Bitcoin)
         Script Len:            25
         Transaction Type:      Pay-to-PubkeyHash (P2PKH)
         PubkeyHash:            C28CBFFC1228B4E2B2AAF5C5CAF1F1B2DBEACE41
-        Assembly:              OP_DUP OP_HASH160  <PubkeyHash>  OP_EQUALVERIFY OP_CHECKSIG
+        Assembly:              OP_DUP OP_HASH160  <PubkeyHash> OP_EQUALVERIFY OP_CHECKSIG
         ScriptPubkey(hex):     76A914C28CBFFC1228B4E2B2AAF5C5CAF1F1B2DBEACE4188AC
         Lock Time:	 0
     ##### Transactions[2] #####
@@ -344,14 +344,14 @@ Parsing Block Chain block head, transaction etc.
         Script Len:            25
         Transaction Type:      Pay-to-PubkeyHash (P2PKH)
         PubkeyHash:            B1BC706BB8626AC40A5CF6055880893D38828DF8
-        Assembly:              OP_DUP OP_HASH160  <PubkeyHash>  OP_EQUALVERIFY OP_CHECKSIG
+        Assembly:              OP_DUP OP_HASH160  <PubkeyHash> OP_EQUALVERIFY OP_CHECKSIG
         ScriptPubkey(hex):     76A914B1BC706BB8626AC40A5CF6055880893D38828DF888AC
       ## Outputs[1] ##
         Value:                 2,500,000,000 Satoshi (25.0 Bitcoin)
         Script Len:            25
         Transaction Type:      Pay-to-PubkeyHash (P2PKH)
         PubkeyHash:            3C45D01A014621A2997CAAB4FD3A125CAB0CB2FC
-        Assembly:              OP_DUP OP_HASH160  <PubkeyHash>  OP_EQUALVERIFY OP_CHECKSIG
+        Assembly:              OP_DUP OP_HASH160  <PubkeyHash> OP_EQUALVERIFY OP_CHECKSIG
         ScriptPubkey(hex):     76A9143C45D01A014621A2997CAAB4FD3A125CAB0CB2FC88AC
         Lock Time:	 0
     ##### Transactions[3] #####
@@ -379,7 +379,7 @@ Parsing Block Chain block head, transaction etc.
         Script Len:            25
         Transaction Type:      Pay-to-PubkeyHash (P2PKH)
         PubkeyHash:            6BEBB9D3F73966B3AC82CCF8329CEBC66D63E894
-        Assembly:              OP_DUP OP_HASH160  <PubkeyHash>  OP_EQUALVERIFY OP_CHECKSIG
+        Assembly:              OP_DUP OP_HASH160  <PubkeyHash> OP_EQUALVERIFY OP_CHECKSIG
         ScriptPubkey(hex):     76A9146BEBB9D3F73966B3AC82CCF8329CEBC66D63E89488AC
         Lock Time:	 0
     ##### Transactions[4] #####
@@ -399,14 +399,14 @@ Parsing Block Chain block head, transaction etc.
         Script Len:            25
         Transaction Type:      Pay-to-PubkeyHash (P2PKH)
         PubkeyHash:            443DF7130746E54229CA609BFA1BDE7097AB1DB6
-        Assembly:              OP_DUP OP_HASH160  <PubkeyHash>  OP_EQUALVERIFY OP_CHECKSIG
+        Assembly:              OP_DUP OP_HASH160  <PubkeyHash> OP_EQUALVERIFY OP_CHECKSIG
         ScriptPubkey(hex):     76A914443DF7130746E54229CA609BFA1BDE7097AB1DB688AC
       ## Outputs[1] ##
         Value:                 490,000,000 Satoshi (4.9 Bitcoin)
         Script Len:            25
         Transaction Type:      Pay-to-PubkeyHash (P2PKH)
         PubkeyHash:            D27C10EC68CC6DEEAEA4976F41693232A4B6FF78
-        Assembly:              OP_DUP OP_HASH160  <PubkeyHash>  OP_EQUALVERIFY OP_CHECKSIG
+        Assembly:              OP_DUP OP_HASH160  <PubkeyHash> OP_EQUALVERIFY OP_CHECKSIG
         ScriptPubkey(hex):     76A914D27C10EC68CC6DEEAEA4976F41693232A4B6FF7888AC
         Lock Time:	 0
     ##### Transactions[5] #####
@@ -426,14 +426,14 @@ Parsing Block Chain block head, transaction etc.
         Script Len:            25
         Transaction Type:      Pay-to-PubkeyHash (P2PKH)
         PubkeyHash:            E936965BF8616C460C70E05B1CBD36C87027E9AC
-        Assembly:              OP_DUP OP_HASH160  <PubkeyHash>  OP_EQUALVERIFY OP_CHECKSIG
+        Assembly:              OP_DUP OP_HASH160  <PubkeyHash> OP_EQUALVERIFY OP_CHECKSIG
         ScriptPubkey(hex):     76A914E936965BF8616C460C70E05B1CBD36C87027E9AC88AC
       ## Outputs[1] ##
         Value:                 5,000,000 Satoshi (0.05 Bitcoin)
         Script Len:            25
         Transaction Type:      Pay-to-PubkeyHash (P2PKH)
         PubkeyHash:            2775BB1825F6F09A57B8814A5733F8841AA171BE
-        Assembly:              OP_DUP OP_HASH160  <PubkeyHash>  OP_EQUALVERIFY OP_CHECKSIG
+        Assembly:              OP_DUP OP_HASH160  <PubkeyHash> OP_EQUALVERIFY OP_CHECKSIG
         ScriptPubkey(hex):     76A9142775BB1825F6F09A57B8814A5733F8841AA171BE88AC
         Lock Time:	 0
     ##### Transactions[6] #####
@@ -453,14 +453,14 @@ Parsing Block Chain block head, transaction etc.
         Script Len:            25
         Transaction Type:      Pay-to-PubkeyHash (P2PKH)
         PubkeyHash:            62AA7F4BF355714327CD1831F73BD25734A43FE8
-        Assembly:              OP_DUP OP_HASH160  <PubkeyHash>  OP_EQUALVERIFY OP_CHECKSIG
+        Assembly:              OP_DUP OP_HASH160  <PubkeyHash> OP_EQUALVERIFY OP_CHECKSIG
         ScriptPubkey(hex):     76A91462AA7F4BF355714327CD1831F73BD25734A43FE888AC
       ## Outputs[1] ##
         Value:                 100,000,000 Satoshi (1.0 Bitcoin)
         Script Len:            25
         Transaction Type:      Pay-to-PubkeyHash (P2PKH)
         PubkeyHash:            04870529EC094DEB356439008529F9EDF6D59E56
-        Assembly:              OP_DUP OP_HASH160  <PubkeyHash>  OP_EQUALVERIFY OP_CHECKSIG
+        Assembly:              OP_DUP OP_HASH160  <PubkeyHash> OP_EQUALVERIFY OP_CHECKSIG
         ScriptPubkey(hex):     76A91404870529EC094DEB356439008529F9EDF6D59E5688AC
         Lock Time:	 0
     ##### Transactions[7] #####
@@ -480,7 +480,7 @@ Parsing Block Chain block head, transaction etc.
         Script Len:            25
         Transaction Type:      Pay-to-PubkeyHash (P2PKH)
         PubkeyHash:            49A0FAB0345D5057D0A1F4EAED7A214693EE5A8C
-        Assembly:              OP_DUP OP_HASH160  <PubkeyHash>  OP_EQUALVERIFY OP_CHECKSIG
+        Assembly:              OP_DUP OP_HASH160  <PubkeyHash> OP_EQUALVERIFY OP_CHECKSIG
         ScriptPubkey(hex):     76A91449A0FAB0345D5057D0A1F4EAED7A214693EE5A8C88AC
         Lock Time:	 0
     ##### Transactions[8] #####
@@ -500,7 +500,7 @@ Parsing Block Chain block head, transaction etc.
         Script Len:            25
         Transaction Type:      Pay-to-PubkeyHash (P2PKH)
         PubkeyHash:            09D8A141969A830D7DF2DD84AC561F1144826494
-        Assembly:              OP_DUP OP_HASH160  <PubkeyHash>  OP_EQUALVERIFY OP_CHECKSIG
+        Assembly:              OP_DUP OP_HASH160  <PubkeyHash> OP_EQUALVERIFY OP_CHECKSIG
         ScriptPubkey(hex):     76A91409D8A141969A830D7DF2DD84AC561F114482649488AC
         Lock Time:	 0
     ##### Transactions[9] #####
@@ -520,7 +520,7 @@ Parsing Block Chain block head, transaction etc.
         Script Len:            25
         Transaction Type:      Pay-to-PubkeyHash (P2PKH)
         PubkeyHash:            210B3D273437DF551B83E400A7B6401F00E47771
-        Assembly:              OP_DUP OP_HASH160  <PubkeyHash>  OP_EQUALVERIFY OP_CHECKSIG
+        Assembly:              OP_DUP OP_HASH160  <PubkeyHash> OP_EQUALVERIFY OP_CHECKSIG
         ScriptPubkey(hex):     76A914210B3D273437DF551B83E400A7B6401F00E4777188AC
         Lock Time:	 0
     ##### Transactions[10] #####
@@ -540,7 +540,7 @@ Parsing Block Chain block head, transaction etc.
         Script Len:            25
         Transaction Type:      Pay-to-PubkeyHash (P2PKH)
         PubkeyHash:            2CDCC43E48688840AAC00E296F603FD31CC8D47F
-        Assembly:              OP_DUP OP_HASH160  <PubkeyHash>  OP_EQUALVERIFY OP_CHECKSIG
+        Assembly:              OP_DUP OP_HASH160  <PubkeyHash> OP_EQUALVERIFY OP_CHECKSIG
         ScriptPubkey(hex):     76A9142CDCC43E48688840AAC00E296F603FD31CC8D47F88AC
         Lock Time:	 0
     ##### Transactions[11] #####
@@ -560,7 +560,7 @@ Parsing Block Chain block head, transaction etc.
         Script Len:            25
         Transaction Type:      Pay-to-PubkeyHash (P2PKH)
         PubkeyHash:            A4C022A7D8E76C4D86991D313F40505838E6FD5A
-        Assembly:              OP_DUP OP_HASH160  <PubkeyHash>  OP_EQUALVERIFY OP_CHECKSIG
+        Assembly:              OP_DUP OP_HASH160  <PubkeyHash> OP_EQUALVERIFY OP_CHECKSIG
         ScriptPubkey(hex):     76A914A4C022A7D8E76C4D86991D313F40505838E6FD5A88AC
         Lock Time:	 0
   ########## Transaction Data END ##########
@@ -618,7 +618,7 @@ Parsing Block Chain block head, transaction etc.
         Script Len:            25
         Transaction Type:      Pay-to-PubkeyHash (P2PKH)
         PubkeyHash:            2B46C3DB6C0DC159CD1EE1644355C5D9B0AF1D23
-        Assembly:              OP_DUP OP_HASH160  <PubkeyHash>  OP_EQUALVERIFY OP_CHECKSIG
+        Assembly:              OP_DUP OP_HASH160  <PubkeyHash> OP_EQUALVERIFY OP_CHECKSIG
         ScriptPubkey(hex):     76A9142B46C3DB6C0DC159CD1EE1644355C5D9B0AF1D2388AC
         Lock Time:	 0
     ##### Transactions[2] #####
@@ -638,7 +638,7 @@ Parsing Block Chain block head, transaction etc.
         Script Len:            25
         Transaction Type:      Pay-to-PubkeyHash (P2PKH)
         PubkeyHash:            E21093B30DCD782B6F1A46C331E166CB0173D544
-        Assembly:              OP_DUP OP_HASH160  <PubkeyHash>  OP_EQUALVERIFY OP_CHECKSIG
+        Assembly:              OP_DUP OP_HASH160  <PubkeyHash> OP_EQUALVERIFY OP_CHECKSIG
         ScriptPubkey(hex):     76A914E21093B30DCD782B6F1A46C331E166CB0173D54488AC
         Lock Time:	 0
     ##### Transactions[3] #####
@@ -690,7 +690,7 @@ Parsing Block Chain block head, transaction etc.
         Script Len:            25
         Transaction Type:      Pay-to-PubkeyHash (P2PKH)
         PubkeyHash:            C27BAD86EEDA15493897627F8ABDE853C29C5E6B
-        Assembly:              OP_DUP OP_HASH160  <PubkeyHash>  OP_EQUALVERIFY OP_CHECKSIG
+        Assembly:              OP_DUP OP_HASH160  <PubkeyHash> OP_EQUALVERIFY OP_CHECKSIG
         ScriptPubkey(hex):     76A914C27BAD86EEDA15493897627F8ABDE853C29C5E6B88AC
         Lock Time:	 0
     ##### Transactions[4] #####
@@ -710,14 +710,14 @@ Parsing Block Chain block head, transaction etc.
         Script Len:            25
         Transaction Type:      Pay-to-PubkeyHash (P2PKH)
         PubkeyHash:            E9051777736F6A761FFC8D5B53E9F5C732F4CBEF
-        Assembly:              OP_DUP OP_HASH160  <PubkeyHash>  OP_EQUALVERIFY OP_CHECKSIG
+        Assembly:              OP_DUP OP_HASH160  <PubkeyHash> OP_EQUALVERIFY OP_CHECKSIG
         ScriptPubkey(hex):     76A914E9051777736F6A761FFC8D5B53E9F5C732F4CBEF88AC
       ## Outputs[1] ##
         Value:                 319,000,000 Satoshi (3.19 Bitcoin)
         Script Len:            25
         Transaction Type:      Pay-to-PubkeyHash (P2PKH)
         PubkeyHash:            CCD7BCBED3B3E4FD9BDD3995A671C19E6A64D815
-        Assembly:              OP_DUP OP_HASH160  <PubkeyHash>  OP_EQUALVERIFY OP_CHECKSIG
+        Assembly:              OP_DUP OP_HASH160  <PubkeyHash> OP_EQUALVERIFY OP_CHECKSIG
         ScriptPubkey(hex):     76A914CCD7BCBED3B3E4FD9BDD3995A671C19E6A64D81588AC
         Lock Time:	 0
     ##### Transactions[5] #####
@@ -737,14 +737,14 @@ Parsing Block Chain block head, transaction etc.
         Script Len:            25
         Transaction Type:      Pay-to-PubkeyHash (P2PKH)
         PubkeyHash:            504362178B9941DF03DAEB908419DC41933151F2
-        Assembly:              OP_DUP OP_HASH160  <PubkeyHash>  OP_EQUALVERIFY OP_CHECKSIG
+        Assembly:              OP_DUP OP_HASH160  <PubkeyHash> OP_EQUALVERIFY OP_CHECKSIG
         ScriptPubkey(hex):     76A914504362178B9941DF03DAEB908419DC41933151F288AC
       ## Outputs[1] ##
         Value:                 1,000,000 Satoshi (0.01 Bitcoin)
         Script Len:            25
         Transaction Type:      Pay-to-PubkeyHash (P2PKH)
         PubkeyHash:            ECD8F97222481950EED4F98DB82455635CCB86B4
-        Assembly:              OP_DUP OP_HASH160  <PubkeyHash>  OP_EQUALVERIFY OP_CHECKSIG
+        Assembly:              OP_DUP OP_HASH160  <PubkeyHash> OP_EQUALVERIFY OP_CHECKSIG
         ScriptPubkey(hex):     76A914ECD8F97222481950EED4F98DB82455635CCB86B488AC
         Lock Time:	 0
     ##### Transactions[6] #####
@@ -764,14 +764,14 @@ Parsing Block Chain block head, transaction etc.
         Script Len:            25
         Transaction Type:      Pay-to-PubkeyHash (P2PKH)
         PubkeyHash:            7DB3F9FA3CA63B593592E58899732F0F5EBA20AF
-        Assembly:              OP_DUP OP_HASH160  <PubkeyHash>  OP_EQUALVERIFY OP_CHECKSIG
+        Assembly:              OP_DUP OP_HASH160  <PubkeyHash> OP_EQUALVERIFY OP_CHECKSIG
         ScriptPubkey(hex):     76A9147DB3F9FA3CA63B593592E58899732F0F5EBA20AF88AC
       ## Outputs[1] ##
         Value:                 120,000,000 Satoshi (1.2 Bitcoin)
         Script Len:            25
         Transaction Type:      Pay-to-PubkeyHash (P2PKH)
         PubkeyHash:            1B0C0C010DEE6DFA5EE728FF822604FC7B9CCB15
-        Assembly:              OP_DUP OP_HASH160  <PubkeyHash>  OP_EQUALVERIFY OP_CHECKSIG
+        Assembly:              OP_DUP OP_HASH160  <PubkeyHash> OP_EQUALVERIFY OP_CHECKSIG
         ScriptPubkey(hex):     76A9141B0C0C010DEE6DFA5EE728FF822604FC7B9CCB1588AC
         Lock Time:	 0
     ##### Transactions[7] #####
@@ -791,14 +791,14 @@ Parsing Block Chain block head, transaction etc.
         Script Len:            25
         Transaction Type:      Pay-to-PubkeyHash (P2PKH)
         PubkeyHash:            A96821EA0114787060156A7D362A495CB3EA0CB1
-        Assembly:              OP_DUP OP_HASH160  <PubkeyHash>  OP_EQUALVERIFY OP_CHECKSIG
+        Assembly:              OP_DUP OP_HASH160  <PubkeyHash> OP_EQUALVERIFY OP_CHECKSIG
         ScriptPubkey(hex):     76A914A96821EA0114787060156A7D362A495CB3EA0CB188AC
       ## Outputs[1] ##
         Value:                 1,000,000 Satoshi (0.01 Bitcoin)
         Script Len:            25
         Transaction Type:      Pay-to-PubkeyHash (P2PKH)
         PubkeyHash:            D5312086F27D20B43D14C9E4D7D76F0220448E68
-        Assembly:              OP_DUP OP_HASH160  <PubkeyHash>  OP_EQUALVERIFY OP_CHECKSIG
+        Assembly:              OP_DUP OP_HASH160  <PubkeyHash> OP_EQUALVERIFY OP_CHECKSIG
         ScriptPubkey(hex):     76A914D5312086F27D20B43D14C9E4D7D76F0220448E6888AC
         Lock Time:	 0
     ##### Transactions[8] #####
@@ -818,14 +818,14 @@ Parsing Block Chain block head, transaction etc.
         Script Len:            25
         Transaction Type:      Pay-to-PubkeyHash (P2PKH)
         PubkeyHash:            6450062840DBA985EEA5DAAEBCE7979443900A92
-        Assembly:              OP_DUP OP_HASH160  <PubkeyHash>  OP_EQUALVERIFY OP_CHECKSIG
+        Assembly:              OP_DUP OP_HASH160  <PubkeyHash> OP_EQUALVERIFY OP_CHECKSIG
         ScriptPubkey(hex):     76A9146450062840DBA985EEA5DAAEBCE7979443900A9288AC
       ## Outputs[1] ##
         Value:                 6,000,000 Satoshi (0.06 Bitcoin)
         Script Len:            25
         Transaction Type:      Pay-to-PubkeyHash (P2PKH)
         PubkeyHash:            136B401E66FC2E94B24008A3A9B8E9B1F34D7B6F
-        Assembly:              OP_DUP OP_HASH160  <PubkeyHash>  OP_EQUALVERIFY OP_CHECKSIG
+        Assembly:              OP_DUP OP_HASH160  <PubkeyHash> OP_EQUALVERIFY OP_CHECKSIG
         ScriptPubkey(hex):     76A914136B401E66FC2E94B24008A3A9B8E9B1F34D7B6F88AC
         Lock Time:	 0
     ##### Transactions[9] #####
@@ -845,14 +845,14 @@ Parsing Block Chain block head, transaction etc.
         Script Len:            25
         Transaction Type:      Pay-to-PubkeyHash (P2PKH)
         PubkeyHash:            B5F7F1F83308C6A6AA92105774FAE12E80CAE914
-        Assembly:              OP_DUP OP_HASH160  <PubkeyHash>  OP_EQUALVERIFY OP_CHECKSIG
+        Assembly:              OP_DUP OP_HASH160  <PubkeyHash> OP_EQUALVERIFY OP_CHECKSIG
         ScriptPubkey(hex):     76A914B5F7F1F83308C6A6AA92105774FAE12E80CAE91488AC
       ## Outputs[1] ##
         Value:                 1,000,000 Satoshi (0.01 Bitcoin)
         Script Len:            25
         Transaction Type:      Pay-to-PubkeyHash (P2PKH)
         PubkeyHash:            ECD8F97222481950EED4F98DB82455635CCB86B4
-        Assembly:              OP_DUP OP_HASH160  <PubkeyHash>  OP_EQUALVERIFY OP_CHECKSIG
+        Assembly:              OP_DUP OP_HASH160  <PubkeyHash> OP_EQUALVERIFY OP_CHECKSIG
         ScriptPubkey(hex):     76A914ECD8F97222481950EED4F98DB82455635CCB86B488AC
         Lock Time:	 0
   ########## Transaction Data END ##########

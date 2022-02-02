@@ -203,7 +203,7 @@ class txOutput:
 			return hexstr
 		if op_code1 == "OP_DUP":  #P2PKHA pay to pubkey hash mode
 			print("        Transaction Type:      Pay-to-PubkeyHash (P2PKH)")
-			op_code2 = OPCODE_NAMES[int(hexstr[2:4],16)] + " "
+			op_code2 = OPCODE_NAMES[int(hexstr[2:4],16)]
 			keylen = int(hexstr[4:6],16) 
 			op_codeTail2nd = OPCODE_NAMES[int(hexstr[6+keylen*2:6+keylen*2+2],16)]
 			op_codeTailLast = OPCODE_NAMES[int(hexstr[6+keylen*2+2:6+keylen*2+4],16)]
