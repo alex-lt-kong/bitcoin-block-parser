@@ -1,5 +1,27 @@
 import io
 import struct
+from hashlib import *
+import base58
+
+class Pubkey2Address:
+	@staticmethod
+	def SHA256D(bstr):
+			return sha256(sha256(bstr).digest()).digest()
+
+	@staticmethod
+	def ConvertPKHToAddress(prefix, addr):
+			data = prefix + addr
+			return base58.b58encode(data + Pubkey2Address.SHA256D(data)[:4])
+
+	@staticmethod
+	def PubkeyToAddress(pubkey_hex):
+			pubkey = bytearray.fromhex(pubkey_hex)
+			round1 = sha256(pubkey).digest()
+			h = new('ripemd160')
+			h.update(round1)
+			pubkey_hash = h.digest()
+			return Pubkey2Address.ConvertPKHToAddress(b'\x00', pubkey_hash)
+
 
 def nbits(num):
   # Convert integer to hex

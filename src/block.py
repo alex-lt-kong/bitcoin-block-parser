@@ -163,8 +163,8 @@ class txInput:
 			print("\t Script op_code is not SIGHASH_ALL")
 			return hexstr
 		else: 
-			pubkey = hexstr[2+scriptLen+2:2+scriptLen+2+66]
-			print(f"        InPubkey:              {pubkey}")
+			pubkey = hexstr[2+scriptLen+2:] # very critical change
+			print(f"        Pubkey:              {pubkey} (Addr: {Pubkey2Address.PubkeyToAddress(pubkey)})")
 #		return hexstr
 
 	def decodeOutIdx(self,idx):
