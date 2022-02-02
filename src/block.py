@@ -122,14 +122,14 @@ class Transaction:
 		
 	def toString(self):
 		print(f"    ##### Transactions[{self.seq}] #####")
-		print(f"      Transaction Version:\t {self.version}")
-		print(f"      Input Count:\t\t {self.input_count}")
-		for i in self.inputs:
-			i.toString()
+		print(f"      Transaction Version:     {self.version}")
+		print(f"      Input Count:             {self.input_count}")
+		for i in range(len(self.inputs)):
+			self.inputs[i].toString(i)
 
 		print(f"      Output Count:\t {self.outCount}")
-		for o in self.outputs:
-			o.toString()
+		for i in range(len(self.outputs)):
+			self.outputs[i].toString(i)
 		print(f"        Lock Time:\t {self.lockTime}")
 
 class txInput:
@@ -141,39 +141,39 @@ class txInput:
 		self.scriptSig = blockchain.read(self.script_length)
 		self.seqNo = uint4(blockchain)
 
-	def toString(self):
-#		print "\tPrev. Tx Hash:\t %s" % hashStr(self.prevhash)
-		print(f"        Transaction Out Index:\t{self.decodeOutIdx(self.txOutId)}")
-		print(f"        Script Length:\t {self.script_length}")
-	#	print(f"\tScriptSig:\t {self.scriptSig}") 
-	#	print(f"\tScriptSig:\t {self.scriptSig.decode('utf8')}") 
+	def toString(self, idx):
+		print(f"      ## Inputs[{idx}] ##")
+		print(f"        Transaction Out Index: {self.decodeOutIdx(self.txOutId)}")
+		print(f"        Script Length:         {self.script_length}")
 		self.decodeScriptSig(self.scriptSig)
-		assert self.seqNo == 4294967295
-		print(f"        Sequence:\t {self.seqNo} (== ffffffff, not in use)")
+		print(f"        ScriptSig(hex):        {self.scriptSig.hex()}")
+		
+	  #	assert self.seqNo == 4294967295
+		print(f"        Sequence:              {self.seqNo} (== ffffffff, not in use)")
 
-	def decodeScriptSig(self,data):
+	def decodeScriptSig(self, data):
 		hexstr = hashStr(data)
 		if 0xffffffff == self.txOutId: #Coinbase
 			return hexstr
 		scriptLen = int(hexstr[0:2],16)
 		scriptLen *= 2
 		script = hexstr[2:2+scriptLen] 
-		print(f"        Script:\t\t {script}")
+		print(f"        Script:                {script}")
 		if SIGHASH_ALL != int(hexstr[scriptLen:scriptLen+2],16): # should be 0x01
 			print("\t Script op_code is not SIGHASH_ALL")
 			return hexstr
 		else: 
 			pubkey = hexstr[2+scriptLen+2:2+scriptLen+2+66]
-			print("        InPubkey:\t " + pubkey)
+			print(f"        InPubkey:              {pubkey}")
 #		return hexstr
 
 	def decodeOutIdx(self,idx):
 		s = ""
 		if(idx == 0xffffffff):
 			s = " Coinbase with special index"
-			print("        Coinbase Text:\t%s" % hashStr(self.prev_transaction_hash))
+			print(f"        Coinbase Text:         {hashStr(self.prev_transaction_hash)}")
 		else: 
-			print("        Prev. Transaction Hash:\t%s" % hashStr(self.prev_transaction_hash))
+			print(f"        Prev. Tx Hash:         {hashStr(self.prev_transaction_hash)}")
 		return f"{int(idx)} {s}"
 		
 
@@ -183,10 +183,11 @@ class txOutput:
 		self.scriptLen = varint(blockchain)
 		self.pubkey = blockchain.read(self.scriptLen)
 
-	def toString(self):
-		print("        Value:\t\t %d" % self.value + " Satoshi")
-		print("        Script Len:\t %d" % self.scriptLen)
-		print("        ScriptPubkey:\t %s" % self.decodeScriptPubkey(self.pubkey))
+	def toString(self, idx):
+		print(f"      ## Outputs[{idx}] ##")
+		print(f"        Value:                 {self.value:,} Satoshi ({self.value / 100_000_000} Bitcoin)")
+		print(f"        Script Len:            {self.scriptLen}")
+		print(f"        ScriptPubkey(hex):     {self.decodeScriptPubkey(self.pubkey)}")
 	def decodeScriptPubkey(self,data):
 		hexstr = hashStr(data)
 		op_idx = int(hexstr[0:2], base=16)
@@ -201,20 +202,20 @@ class txOutput:
 			print("        Pure Pubkey:\t   %s" % hexstr[2:2+keylen*2])
 			return hexstr
 		if op_code1 == "OP_DUP":  #P2PKHA pay to pubkey hash mode
+			print("        Transaction Type:      Pay-to-PubkeyHash (P2PKH)")
 			op_code2 = OPCODE_NAMES[int(hexstr[2:4],16)] + " "
 			keylen = int(hexstr[4:6],16) 
 			op_codeTail2nd = OPCODE_NAMES[int(hexstr[6+keylen*2:6+keylen*2+2],16)]
 			op_codeTailLast = OPCODE_NAMES[int(hexstr[6+keylen*2+2:6+keylen*2+4],16)]
-			print(" \tPubkey OP_CODE:\t " + op_code1 + " " + op_code2 + " " + "Bytes:%d " % keylen +\
-					"tail_op_code:" +  op_codeTail2nd + " " + op_codeTailLast)
-			print("\tPubkeyHash:\t       %s" % hexstr[6:6+keylen*2])
+			print(f"        PubkeyHash:            {hexstr[6:6+keylen*2]}")
+			print(f"        Assembly:              {op_code1} {op_code2} <PubkeyHash> {op_codeTail2nd} {op_codeTailLast}")
 			return hexstr	
 		elif op_code1 == "OP_HASH160": #P2SHA pay to script hash 
 			keylen = int(hexstr[2:4],16) 
 			op_codeTail = OPCODE_NAMES[int(hexstr[4+keylen*2:4+keylen*2+2],16)]
-			print(" \tPubkey OP_CODE:\t " + op_code1 + " " + " " + "Bytes:%d " % keylen +\
+			print("         Pubkey OP_CODE:\t " + op_code1 + " " + " " + "Bytes:%d " % keylen +\
 					"tail_op_code:" +  op_codeTail + " " )
-			print("\tPure Pubkey:\t     %s" % hexstr[4:4+keylen*2])
+			print("        Pure Pubkey:\t     %s" % hexstr[4:4+keylen*2])
 			return hexstr
 		else: #TODO extend for multi-signature parsing 
 			print("\t Need to extend multi-signatuer parsing %x" % int(hexstr[0:2],16) + op_code1)
