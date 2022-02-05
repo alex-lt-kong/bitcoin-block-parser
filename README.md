@@ -6,6 +6,18 @@ This project is based on the Python2 project
 [blocktools](https://github.com/tenthirtyone/blocktools) which has not been 
 updated since 2018-02-02 (as of 2022-02-02)
 
+### Usage
+
+This project depends on the block files downloaded and validated by 
+[Bitcoin Core](https://bitcoin.org/en/download). While this project does some
+block and transaction validations, it is more for research purpose and is meant
+to be cryptographically secure.
+
+```
+python3 ./src/examine.py --file-path=~/bitcoin/blocks/blk00003.dat --start 5 --offset=6
+```
+
+
 ### Changes
 * Upgrade syntax to Python3. Use type hints and `assert isinstance()` to facilitate the understanding of the code.
 * Show both input's public key and its corresponding wallet address.
