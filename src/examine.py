@@ -44,8 +44,8 @@ def parse(block_reader: io.BufferedReader, start: int, offset: int):
 def main():
 
 	ap = argparse.ArgumentParser()
-	ap.add_argument('--file-path', dest='file-path', required=True, help="The path of blk*.dat file as used by Bitcoin Core.")
-	ap.add_argument('--start', dest='start', default=0, help="Index of a block withIN the given data file.")
+	ap.add_argument('--file-path', dest='file-path', required=True, help="The path of blk*.dat file as managed by Bitcoin Core.")
+	ap.add_argument('--start', dest='start', default=0, help="Start index of a block withIN the given data file.")
 	ap.add_argument('--offset', dest='offset', default=-1, help="Offset from start.")
 	args = vars(ap.parse_args())
 	file_path = str(args['file-path'])

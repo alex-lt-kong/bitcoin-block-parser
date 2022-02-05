@@ -9,16 +9,29 @@ updated since 2018-02-02 (as of 2022-02-02)
 ### Usage
 
 This project depends on the block files downloaded and validated by 
-[Bitcoin Core](https://bitcoin.org/en/download). While this project does some
-block and transaction validations, it is more for research purpose and is meant
-to be cryptographically secure.
+[Bitcoin Core](https://bitcoin.org/en/download). 
+
+
+
+```
+python3 ./src/examine.py --help
+usage: examine.py [-h] --file-path FILE-PATH [--start START] [--offset OFFSET]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --file-path FILE-PATH
+                        The path of blk*.dat file as managed by Bitcoin Core.
+  --start START         Start index of a block withIN the given data file.
+  --offset OFFSET       Offset from start.
+```
+
+Example
 
 ```
 python3 ./src/examine.py --file-path=~/bitcoin/blocks/blk00003.dat --start 5 --offset=6
 ```
 
-
-### Changes
+### Changes compared with [blocktools](https://github.com/tenthirtyone/blocktools)
 * Upgrade syntax to Python3. Use type hints and `assert isinstance()` to facilitate the understanding of the code.
 * Show both input's public key and its corresponding wallet address.
 * Clarify the unit of `Difficulty`, show both difficulty value and raw value (as number of bits).
@@ -29,6 +42,11 @@ python3 ./src/examine.py --file-path=~/bitcoin/blocks/blk00003.dat --start 5 --o
 * Explicitly handle endianness of bytes, which is actually a pretty confusing part of Bitcoin's block structure.
 * Change formatting and indentation to make the output more structured.
 * Calculate the hash of the current block.
+
+### Notes
+
+While this project does some block and transaction validations,
+it is more for research purpose and is meant to be cryptographically secure.
 
 ## Sample Output
 
