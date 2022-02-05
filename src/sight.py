@@ -3,12 +3,14 @@
 from blocktools import *
 from block import Block, BlockHeader
 
+import argparse
 import io
+import os
 import sys
 
 
 
-def parse(blockchain: io.BufferedReader, block_no: int):
+def parse(blockchain: io.BufferedReader, start: int, offset: int):
 	assert isinstance(blockchain, io.BufferedReader)
 	print('Parsing Block Chain block head, transaction etc.')
 	continue_parsing = True
@@ -19,16 +21,20 @@ def parse(blockchain: io.BufferedReader, block_no: int):
 	fSize = blockchain.tell() - 80 #Minus last Block header size for partial file
 	blockchain.seek(0, io.SEEK_SET)
 	# SEEK_SET: seek from the start of the stream position
-	while continue_parsing:	
+	while continue_parsing:
 		block = Block(blockchain)
 		continue_parsing = block.continue_parsing
 		counter += 1
-		print(f"#################### Blocks[{counter-1}] BEGIN ####################")
+
+		if counter <= start:
+			continue
+
 		if continue_parsing:
+			print(f"#################### Blocks[{counter-1}] BEGIN ####################")
 			block.toString() # print the block as well
+			print(f"#################### Blocks[{counter-1}] END ####################\n")
 		
-		print(f"#################### Blocks[{counter-1}] END ####################\n")
-		if counter >= block_no and block_no != 0xFF:
+		if counter >= start + offset:
 			continue_parsing = False
 
 	print('')
@@ -36,15 +42,21 @@ def parse(blockchain: io.BufferedReader, block_no: int):
 	print(f"Parsed {counter} blocks")
 
 def main():
-	if len(sys.argv) < 2:
-		print('Usage: sight.py filename [N]')
-	else:
-		block_no = 0xFF #255
-		if(len(sys.argv) == 3):
-			block_no = int(sys.argv[2])
-			print(f"Parsing {block_no} blocks")
-		with open(sys.argv[1], 'rb') as blockchain:
-			parse(blockchain, block_no)
+
+	ap = argparse.ArgumentParser()
+	ap.add_argument('--file-path', dest='file-path', required=True, help="The path of blk*.dat file as used by Bitcoin Core.")
+	ap.add_argument('--start', dest='start', default=0, help="Index of a block withIN the given data file.")
+	ap.add_argument('--offset', dest='offset', default=-1, help="Offset from start.")
+	args = vars(ap.parse_args())
+	file_path = str(args['file-path'])
+	start = int(args['start'])
+	offset = int(args['offset'])
+
+	if os.path.isfile(file_path) is False:
+		raise FileNotFoundError(f"[{file_path}] does not exist")
+	print(f"Parsing {os.path.basename(file_path)}[{start}: {start + offset}]")
+	with open(file_path, 'rb') as blockchain:
+		parse(blockchain, start=start, offset=offset)
 
 
 

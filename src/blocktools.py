@@ -3,6 +3,12 @@ import struct
 from hashlib import *
 import base58
 
+# * Native byte order is big-endian or little-endian, depending on the host system.
+#   For example, Intel x86 and AMD64 (x86-64) are little-endian;
+#   Motorola 68000 and PowerPC G5 are big-endian;
+#   ARM and Intel Itanium feature switchable endianness (bi-endian).
+#   Use sys.byteorder to check the endianness of your system.
+
 class Pubkey2Address:
 	@staticmethod
 	def SHA256D(bstr):
@@ -44,10 +50,20 @@ def uint2(stream):
 
 def uint4(stream: io.BufferedReader):
 	assert isinstance(stream, io.BufferedReader)
-	return struct.unpack('I', stream.read(4))[0]
-	# format string 'I' means unsigned int
-	# io.BufferedReader.read(): Read and return size bytes, or...
-	# So here we read 4 bytes from the stream and treat it as an unsigned integer.
+	res = struct.unpack('<I', stream.read(4))[0]
+	assert isinstance(res, int)
+	# Python does not have signed and unsigned integers as data types. However,
+	# In Python, value of an integer is not restricted by the number of bits and
+	# can expand to the limit of the available memory.
+	return res
+	# format string 'I' means unsigned int and '<' means read bytes following
+	# little-endian byte order.
+	# So there we io.BufferedReader.read() 4 bytes from the stream 
+	# and then interpret the bytes into an unsigned integer using little-endian
+	# byte order.
+	# For example, if the underlying bytes are F9BEB4X9 on the filesystem
+  # this function returns integer 3652501241 / 0xd9b4bef9
+
 
 def uint8(stream):
 	return struct.unpack('Q', stream.read(8))[0]
@@ -82,6 +98,20 @@ def varint(stream):
 	raise ValueError('Datafile seems corrupt')
 
 
-def hashStr(bytebuffer: bytes):
-	assert isinstance(bytebuffer, bytes)
-	return bytebuffer.hex().upper()
+def bytes_to_hex_string(array: bytes, big_endian=False):
+
+	assert isinstance(array, bytes)
+	
+	def _int2bytes(i, enc):
+		return i.to_bytes((i.bit_length() + 7) // 8, byteorder=enc)
+
+	def _convert_hex(str, enc1, enc2):
+		return _int2bytes(int.from_bytes(bytes.fromhex(str), enc1), enc2).hex()
+
+	hex = array.hex().upper()
+	if big_endian:
+		return _convert_hex(hex, 'little', 'big').upper()
+
+	return hex
+
+

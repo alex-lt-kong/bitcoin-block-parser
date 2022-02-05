@@ -2,10 +2,13 @@ from blocktools import *
 from opcode import *
 from datetime import datetime
 
+import binascii
+import hashlib
 import io
 import time
 
 class BlockHeader:
+
 	def __init__(self, blockchain):
 		self.version = uint4(blockchain)
 		self.previous_block_hash = hash32(blockchain)
@@ -14,18 +17,47 @@ class BlockHeader:
 		self.time = uint4(blockchain)
 		self.bits = uint4(blockchain)
 		self.nonce = uint4(blockchain)
+
+	def get_current_block_hash(self, version: int, previous_block_hash: str, merkle_root: str, timestamp: str, bits: str, nonce: int):
+
+		assert version == 1 or version == 2
+		version = f"0000000{version}" # 1
+		time = timestamp # May 21, 2011 1:26:31 PM
+		nonce = hex(int(0x100000000)+nonce)[-8:] # in 4-byte hex notation "9546a142"
+
+		# 2. Convert them in little-endian hex notation
+		version = (binascii.unhexlify(version)[::-1])
+		previous_block_hash = (binascii.unhexlify(previous_block_hash)[::-1])
+		merkle_root = (binascii.unhexlify(merkle_root)[::-1])
+		time = (binascii.unhexlify(time)[::-1])
+		bits = (binascii.unhexlify(bits)[::-1])
+		nonce = (binascii.unhexlify(nonce)[::-1])
+
+		# 3. Concatenating header values
+		header = (version+previous_block_hash+merkle_root+time+bits+nonce)
+
+		hash = hashlib.sha256(hashlib.sha256(header).digest()).digest()
+		return bytes_to_hex_string(hash, big_endian=True)
+
+
 	def toString(self):
-		from binascii import hexlify
-		print(f"    Version               {self.version}")
-		print(f"    Previous Block Hash   {hashStr(self.previous_block_hash)}")
-		print(f"    Merkle Root           {str(hexlify(self.merkleHash[::-1]).decode('utf-8'))}")
-		print(f"    Merkle Root           {hashStr(self.merkleHash[::-1])}") 
-		print(f"    Time stamp            {self.decodeTime(self.time)}")
-		print(f"    Difficulty            {difficulty(self.bits):.2f} ({self.bits} bits)")
-		print(f"    Nonce                 {self.nonce}")
-	def decodeTime(self, time):
-		utc_time = datetime.utcfromtimestamp(time)
-		return utc_time.strftime("%Y-%m-%d %H:%M:%S.%f+00:00 (UTC)")
+		print(f"    Version           {self.version}")
+		print(f"    Prev. Block Hash  {bytes_to_hex_string(self.previous_block_hash)}")
+		print(f"    Merkle Root       {bytes_to_hex_string(self.merkleHash[::-1], big_endian=True)} (Big Endian) /\n"
+		      f"                      {bytes_to_hex_string(self.merkleHash[::-1])} (Little Endian)") 
+		ts = f"{self.time:x}"
+		bts = f"{self.bits:x}"
+		print(f"    Timestamp         {self.time} / 0x{self.time:x} / {datetime.utcfromtimestamp(self.time)} (UTC)")
+		print(f"    Difficulty        {difficulty(self.bits):.2f} ({self.bits} bits / 0x{self.bits:x} bits)")
+		print(f"    Nonce             {self.nonce}")
+		print(f"    Curr. Block Hash  ", end="")
+		print(self.get_current_block_hash(
+								self.version,
+								bytes_to_hex_string(self.previous_block_hash),
+								bytes_to_hex_string(self.merkleHash[::-1], big_endian=True),
+								ts,
+								bts,
+								self.nonce))
 
 class Block:
 	def __init__(self, blockchain: io.BufferedReader):
@@ -87,10 +119,10 @@ class Block:
 
 	def toString(self):
 		print("")
-		print(f"  Magic No: \t\t\t{hex(self.magicNum).upper()}") 
+		print(f"  Magic No:          {hex(self.magicNum).upper()}") 
 		assert hex(self.magicNum).upper() == "0XD9B4BEF9"
 		# seems this is something hard-coded		
-		print(f"  Blocksize (bytes): \t{self.blocksize}")
+		print(f"  Blocksize (bytes): {self.blocksize}")
 		print("")
 		print("  ########## Block Header BEGIN ##########")
 		self.blockHeader.toString()
@@ -154,7 +186,7 @@ class txInput:
 		print(f"        Sequence:              {self.seqNo} (== ffffffff, not in use)")
 
 	def decodeScriptSig(self, data):
-		hexstr = hashStr(data)
+		hexstr = bytes_to_hex_string(data)
 		if 0xffffffff == self.txOutId: #Coinbase
 			return hexstr
 		scriptLen = int(hexstr[0:2],16)
@@ -173,9 +205,9 @@ class txInput:
 		s = ""
 		if(idx == 0xffffffff):
 			s = " Coinbase with special index"
-			print(f"        Coinbase Text:         {hashStr(self.prev_transaction_hash)}")
+			print(f"        Coinbase Text:         {bytes_to_hex_string(self.prev_transaction_hash)}")
 		else: 
-			print(f"        Prev. Tx Hash:         {hashStr(self.prev_transaction_hash)}")
+			print(f"        Prev. Tx Hash:         {bytes_to_hex_string(self.prev_transaction_hash)}")
 		return f"{int(idx)} {s}"
 		
 
@@ -191,7 +223,7 @@ class txOutput:
 		print(f"        Script Len:            {self.scriptLen}")
 		print(f"        ScriptPubkey(hex):     {self.decodeScriptPubkey(self.pubkey)}")
 	def decodeScriptPubkey(self,data):
-		hexstr = hashStr(data)
+		hexstr = bytes_to_hex_string(data)
 		op_idx = int(hexstr[0:2], base=16)
 		try: 
 			op_code1 = OPCODE_NAMES[op_idx]
