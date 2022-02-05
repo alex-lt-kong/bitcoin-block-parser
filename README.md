@@ -13,6 +13,8 @@ updated since 2018-02-02 (as of 2022-02-02)
 * Show Bitcoin `Script` the same way as [Bitcoin Wiki](https://en.bitcoin.it/wiki/Script), i.e., explicity show OP_CODEs as they are.
 * Revise the section from `Script` to `Assembly` to match the term used by a few online Bitcoin block explorers'.
 * Show `ScriptSig`'s hex representation, so that users can cross-reference the results from this script and some online Bitcoin block explorers'.
+* Lengthen method names so that one does not have to be very familiar with the code to understand the purpose of them.
+* Explicitly handle endianness of bytes, which is actually a pretty confusing part of Bitcoin's block structure.
 * Change formatting and indentation to make the output more structured.
 
 ## Sample Output

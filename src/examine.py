@@ -10,19 +10,19 @@ import sys
 
 
 
-def parse(blockchain: io.BufferedReader, start: int, offset: int):
-	assert isinstance(blockchain, io.BufferedReader)
+def parse(block_reader: io.BufferedReader, start: int, offset: int):
+	assert isinstance(block_reader, io.BufferedReader)
 	print('Parsing Block Chain block head, transaction etc.')
 	continue_parsing = True
 	counter = 0
-	blockchain.seek(0, io.SEEK_END)
+	block_reader.seek(0, io.SEEK_END)
 	# SEEK_END: seek from end and offset is 0,
 	# so it just means we set the stream position to the end
-	fSize = blockchain.tell() - 80 #Minus last Block header size for partial file
-	blockchain.seek(0, io.SEEK_SET)
+	fSize = block_reader.tell() - 80 #Minus last Block header size for partial file
+	block_reader.seek(0, io.SEEK_SET)
 	# SEEK_SET: seek from the start of the stream position
 	while continue_parsing:
-		block = Block(blockchain)
+		block = Block(block_reader)
 		continue_parsing = block.continue_parsing
 		counter += 1
 
@@ -55,8 +55,10 @@ def main():
 	if os.path.isfile(file_path) is False:
 		raise FileNotFoundError(f"[{file_path}] does not exist")
 	print(f"Parsing {os.path.basename(file_path)}[{start}: {start + offset}]")
-	with open(file_path, 'rb') as blockchain:
-		parse(blockchain, start=start, offset=offset)
+	with open(file_path, 'rb') as block_reader:
+		# rb: Opens the file as read-only in binary format and starts reading from
+		# the beginning of the file.
+		parse(block_reader, start=start, offset=offset)
 
 
 

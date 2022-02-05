@@ -9,83 +9,79 @@ import time
 
 class BlockHeader:
 
-	def __init__(self, blockchain):
-		self.version = uint4(blockchain)
-		self.previous_block_hash = hash32(blockchain)
-		self.merkleHash = hash32(blockchain)
+	def __init__(self, block_reader):
+		# The following is also the order of bytes of a blk*.dat file.
+		self.version = read_4bytes_as_uint(block_reader)
+		self.prev_blk_hash = bytes_to_hex_string(read_32bytes(block_reader,
+		 																											to_big_endian=True))
+		self.merkle_root = bytes_to_hex_string(read_32bytes(block_reader, 
+																												to_big_endian=True))
 		# the Merkle root is the hash of all the hashes of all the transactions in the block. 
-		self.time = uint4(blockchain)
-		self.bits = uint4(blockchain)
-		self.nonce = uint4(blockchain)
+		self.timestamp = read_4bytes_as_uint(block_reader)
+		self.bits = read_4bytes_as_uint(block_reader)
+		self.nonce = read_4bytes_as_uint(block_reader)
 
-	def get_current_block_hash(self, version: int, previous_block_hash: str, merkle_root: str, timestamp: str, bits: str, nonce: int):
+	def get_current_block_hash(self, ):
+		# The idea is that, we firstly convert strings back to bytes using
+		# bytes.fromhex() and then we convert bytes from Big-Endian order back
+		# to Little-Endian order with [::-1], so that the order of bytes are exactly 
+		# the same as those stored in blk*.dat file
 
-		assert version == 1 or version == 2
-		version = f"0000000{version}" # 1
-		time = timestamp # May 21, 2011 1:26:31 PM
-		nonce = hex(int(0x100000000)+nonce)[-8:] # in 4-byte hex notation "9546a142"
-
-		# 2. Convert them in little-endian hex notation
-		version = (binascii.unhexlify(version)[::-1])
-		previous_block_hash = (binascii.unhexlify(previous_block_hash)[::-1])
-		merkle_root = (binascii.unhexlify(merkle_root)[::-1])
-		time = (binascii.unhexlify(time)[::-1])
-		bits = (binascii.unhexlify(bits)[::-1])
-		nonce = (binascii.unhexlify(nonce)[::-1])
-
-		# 3. Concatenating header values
-		header = (version+previous_block_hash+merkle_root+time+bits+nonce)
+		assert self.version == 1 or self.version == 2
+		
+		header = (bytes.fromhex(f"0000000{self.version}")[::-1]+
+							bytes.fromhex(self.prev_blk_hash)[::-1]+
+							bytes.fromhex(self.merkle_root)[::-1]+
+							self.timestamp.to_bytes(4, byteorder='little')+ # 4 bytes out, 4 bytes in
+							self.bits.to_bytes(4, byteorder='little')+			# Little-Endian out, Little-Endian in
+							self.nonce.to_bytes(4, byteorder='little'))
 
 		hash = hashlib.sha256(hashlib.sha256(header).digest()).digest()
-		return bytes_to_hex_string(hash, big_endian=True)
+		return bytes_to_hex_string(hash, switch_endianness=True)
 
 
 	def toString(self):
 		print(f"    Version           {self.version}")
-		print(f"    Prev. Block Hash  {bytes_to_hex_string(self.previous_block_hash)}")
-		print(f"    Merkle Root       {bytes_to_hex_string(self.merkleHash[::-1], big_endian=True)} (Big Endian) /\n"
-		      f"                      {bytes_to_hex_string(self.merkleHash[::-1])} (Little Endian)") 
-		ts = f"{self.time:x}"
-		bts = f"{self.bits:x}"
-		print(f"    Timestamp         {self.time} / 0x{self.time:x} / {datetime.utcfromtimestamp(self.time)} (UTC)")
+		print(f"    Prev. Block Hash  {self.prev_blk_hash}")
+		print(f"    Merkle Root       {self.merkle_root}") 
+		print(f"    Timestamp         {self.timestamp} / 0x{self.timestamp:x} / {datetime.utcfromtimestamp(self.timestamp)} (UTC)")
 		print(f"    Difficulty        {difficulty(self.bits):.2f} ({self.bits} bits / 0x{self.bits:x} bits)")
 		print(f"    Nonce             {self.nonce}")
-		print(f"    Curr. Block Hash  ", end="")
-		print(self.get_current_block_hash(
-								self.version,
-								bytes_to_hex_string(self.previous_block_hash),
-								bytes_to_hex_string(self.merkleHash[::-1], big_endian=True),
-								ts,
-								bts,
-								self.nonce))
+
 
 class Block:
-	def __init__(self, blockchain: io.BufferedReader):
-		assert isinstance(blockchain, io.BufferedReader)
+	def __init__(self, block_reader: io.BufferedReader):
+		assert isinstance(block_reader, io.BufferedReader)
 		self.continue_parsing = True
-		self.magicNum = 0
-		self.blocksize = 0
+		self.magic_number = 0
+		self.block_size = 0
 		self.blockheader = ''
 		self.transaction_count = 0
 		self.transactions = []
 
-		if self.has_length(blockchain, 8):	
-			self.magicNum = uint4(blockchain)
-			# If you unpack bytes F9 BE in dat file you get the magic number 0XD9B4BEF9
-			# magic number is also used to confirm the start of a block
-			self.blocksize = uint4(blockchain)
+		if self.has_length(block_reader, 8):	
+			self.magic_number = read_4bytes_as_uint(block_reader)
+			self.block_size = read_4bytes_as_uint(block_reader)
+			# For example, after reading the magic number, the next 4 bytes from the 
+			# 1st block in file blk00003.dat (hash 0000000000000a21907a50af01d3eb8bb52cc0b18edea7facf0dce4b31d8932a)
+			# are 48 28 00 00:
+			# step1: switch to Big-Endian order: 00 00 28 48 == 28 48
+			# step2: convert 2 8 4 8 to binary: 0010 1000 0100 1000
+			# steo3: convert to decimal: 2^3 + 2^6 + 2^11 + 2^13 = 10312
+			# so this block's size is 10,312 bytes as confirmed by this online explorer:
+			# https://www.blockchain.com/btc/block/0000000000000A21907A50AF01D3EB8BB52CC0B18EDEA7FACF0DCE4B31D8932A
 		else:
 			# If has_length() returns false, there is no next block in the file
 			self.continue_parsing = False
 			return
 		
-		if self.has_length(blockchain, self.blocksize):
-			self.set_header(blockchain)
-			self.transaction_count = varint(blockchain)
+		if self.has_length(block_reader, self.block_size):
+			self.set_header(block_reader)
+			self.transaction_count = varint(block_reader)
 			self.transactions = []
 
 			for i in range(0, self.transaction_count):
-				transaction = Transaction(blockchain)
+				transaction = Transaction(block_reader)
 				transaction.seq = i 
 				self.transactions.append(transaction)
 		else:
@@ -96,7 +92,7 @@ class Block:
 		return self.continue_parsing
 
 	def getBlocksize(self):
-		return self.blocksize
+		return self.block_size
 
 	def has_length(self, blockchain, size):
 		cur_pos = blockchain.tell()
@@ -115,17 +111,18 @@ class Block:
 		return True
 
 	def set_header(self, blockchain):
-		self.blockHeader = BlockHeader(blockchain)
+		self.block_header = BlockHeader(blockchain)
 
 	def toString(self):
 		print("")
-		print(f"  Magic No:          {hex(self.magicNum).upper()}") 
-		assert hex(self.magicNum).upper() == "0XD9B4BEF9"
+		print(f"  Magic No:          {hex(self.magic_number).upper()}") 
+		assert hex(self.magic_number).upper() == "0XD9B4BEF9"
 		# seems this is something hard-coded		
-		print(f"  Blocksize (bytes): {self.blocksize}")
+		print(f"  Blocksize (bytes): {self.block_size}")
+		print(f"  Curr. Block Hash:  {self.block_header.get_current_block_hash()} (Calculated)")
 		print("")
 		print("  ########## Block Header BEGIN ##########")
-		self.blockHeader.toString()
+		self.block_header.toString()
 		print("  ########## Block Header END ##########\n")
 		print(f"  ########## Transaction Count: {self.transaction_count} ##########\n")
 		print("  ########## Transaction Data BEGIN ##########")
@@ -138,7 +135,7 @@ class Transaction:
 	def __init__(self, blockchain: io.BufferedReader):
 		assert isinstance(blockchain, io.BufferedReader)
 		cur_pos = blockchain.tell()
-		self.version = uint4(blockchain)
+		self.version = read_4bytes_as_uint(blockchain)
 		self.input_count = varint(blockchain)
 		self.inputs = []
 		self.seq = 1
@@ -151,7 +148,7 @@ class Transaction:
 			for i in range(0, self.outCount):
 				output = txOutput(blockchain)
 				self.outputs.append(output)	
-		self.lockTime = uint4(blockchain)
+		self.lockTime = read_4bytes_as_uint(blockchain)
 
 		
 	def toString(self):
@@ -169,11 +166,11 @@ class Transaction:
 class txInput:
 	def __init__(self, blockchain: io.BufferedReader):
 		assert isinstance(blockchain, io.BufferedReader)
-		self.prev_transaction_hash = hash32(blockchain)
-		self.txOutId = uint4(blockchain)
+		self.prev_transaction_hash = read_32bytes(blockchain)
+		self.txOutId = read_4bytes_as_uint(blockchain)
 		self.script_length = varint(blockchain)
 		self.scriptSig = blockchain.read(self.script_length)
-		self.seqNo = uint4(blockchain)
+		self.seqNo = read_4bytes_as_uint(blockchain)
 
 	def toString(self, idx):
 		print(f"      ## Inputs[{idx}] ##")

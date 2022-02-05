@@ -48,14 +48,9 @@ def uint1(stream):
 def uint2(stream):
 	return struct.unpack('H', stream.read(2))[0]
 
-def uint4(stream: io.BufferedReader):
-	assert isinstance(stream, io.BufferedReader)
-	res = struct.unpack('<I', stream.read(4))[0]
-	assert isinstance(res, int)
-	# Python does not have signed and unsigned integers as data types. However,
-	# In Python, value of an integer is not restricted by the number of bits and
-	# can expand to the limit of the available memory.
-	return res
+def read_4bytes_as_uint(reader: io.BufferedReader) -> int:
+	assert isinstance(reader, io.BufferedReader)
+	res = struct.unpack('<I', reader.read(4))[0]
 	# format string 'I' means unsigned int and '<' means read bytes following
 	# little-endian byte order.
 	# So there we io.BufferedReader.read() 4 bytes from the stream 
@@ -64,15 +59,28 @@ def uint4(stream: io.BufferedReader):
 	# For example, if the underlying bytes are F9BEB4X9 on the filesystem
   # this function returns integer 3652501241 / 0xd9b4bef9
 
+	assert isinstance(res, int)
+	# Python does not have signed and unsigned integers as data types. However,
+	# In Python, value of an integer is not restricted by the number of bits and
+	# can expand to the limit of the available memory.
+	return res
+
+
 
 def uint8(stream):
 	return struct.unpack('Q', stream.read(8))[0]
 
-def hash32(stream):
-	return stream.read(32)[::-1]
+def read_32bytes(reader, to_big_endian=True):
+	assert isinstance(reader, io.BufferedReader)
+	# My understanding is that Bitcoin Core stores data in little-endian order,
+	# slice syntax: array[ <first element to include> : <first element to exclude> : <step>]
+	# so if we want Big Endian, we use step=-1
+	array = reader.read(32)[::-1 if to_big_endian else 1]
+	assert(array, bytes)
+	return array
 
 def time(stream):
-	time = uint4(stream)
+	time = read_4bytes_as_uint(stream)
 	return time
 
 def varint(stream):
@@ -92,26 +100,16 @@ def varint(stream):
 	if size == 0xfd: # decimal 253, binary 11111101
 		return uint2(stream)
 	if size == 0xfe: # decimal 254, binary 11111110
-		return uint4(stream)
+		return read_4bytes_as_uint(stream)
 	if size == 0xff: # decimal 255, binary 11111111
 		return uint8(stream)
 	raise ValueError('Datafile seems corrupt')
 
 
-def bytes_to_hex_string(array: bytes, big_endian=False):
-
+def bytes_to_hex_string(array: bytes, switch_endianness=False) -> str:
 	assert isinstance(array, bytes)
-	
-	def _int2bytes(i, enc):
-		return i.to_bytes((i.bit_length() + 7) // 8, byteorder=enc)
-
-	def _convert_hex(str, enc1, enc2):
-		return _int2bytes(int.from_bytes(bytes.fromhex(str), enc1), enc2).hex()
-
-	hex = array.hex().upper()
-	if big_endian:
-		return _convert_hex(hex, 'little', 'big').upper()
-
-	return hex
+	return array[::-1 if switch_endianness else 1].hex().upper()
+	# array[ <first element to include> : <first element to exclude> : <step>]
+	# step=-1 basically means we reverse the order of the bytes.
 
 
