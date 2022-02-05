@@ -141,3 +141,5 @@ Parsing Block Chain block head, transaction etc.
 
 ## References
 <img src="./images/block_structure.png"></img>
+
+* [scriptPubKey & scriptSig Explained](https://www.mycryptopedia.com/scriptpubkey-scriptsig/)
