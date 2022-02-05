@@ -12,7 +12,7 @@ import sys
 
 def parse(block_reader: io.BufferedReader, start: int, offset: int):
 	assert isinstance(block_reader, io.BufferedReader)
-	print('Parsing Block Chain block head, transaction etc.')
+
 	continue_parsing = True
 	counter = 0
 	block_reader.seek(0, io.SEEK_END)
