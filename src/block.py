@@ -15,9 +15,11 @@ class BlockHeader:
 		self.bits = uint4(blockchain)
 		self.nonce = uint4(blockchain)
 	def toString(self):
+		from binascii import hexlify
 		print(f"    Version               {self.version}")
 		print(f"    Previous Block Hash   {hashStr(self.previous_block_hash)}")
-		print(f"    Merkle Root           {hashStr(self.merkleHash)}")
+		print(f"    Merkle Root           {str(hexlify(self.merkleHash[::-1]).decode('utf-8'))}")
+		print(f"    Merkle Root           {hashStr(self.merkleHash[::-1])}") 
 		print(f"    Time stamp            {self.decodeTime(self.time)}")
 		print(f"    Difficulty            {difficulty(self.bits):.2f} ({self.bits} bits)")
 		print(f"    Nonce                 {self.nonce}")

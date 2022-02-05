@@ -143,3 +143,4 @@ Parsing Block Chain block head, transaction etc.
 <img src="./images/block_structure.png"></img>
 
 * [scriptPubKey & scriptSig Explained](https://www.mycryptopedia.com/scriptpubkey-scriptsig/)
+* [Litte Big Endian Converter](https://blockchain-academy.hs-mittweida.de/litte-big-endian-converter/)

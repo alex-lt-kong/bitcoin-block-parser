@@ -1,0 +1,157 @@
+Parsing 4 blocks
+Parsing Block Chain block head, transaction etc.
+#################### Blocks[0] BEGIN ####################
+
+  Magic No: 			0XD9B4BEF9
+  Blocksize (bytes): 	285
+
+  ########## Block Header BEGIN ##########
+    Version               1
+    Previous Block Hash   0000000000000000000000000000000000000000000000000000000000000000
+    Merkle Root           3ba3edfd7a7b12b27ac72c3e67768f617fc81bc3888a51323a9fb8aa4b1e5e4a
+    Time stamp            2009-01-03 18:15:05.000000+00:00 (UTC)
+    Difficulty            1.00 (486604799 bits)
+    Nonce                 2083236893
+  ########## Block Header END ##########
+
+  ########## Transaction Count: 1 ##########
+
+  ########## Transaction Data BEGIN ##########
+    ##### Transactions[0] #####
+      Transaction Version:     1
+      Input Count:             1
+      ## Inputs[0] ##
+        Coinbase Text:         0000000000000000000000000000000000000000000000000000000000000000
+        Transaction Out Index: 4294967295  Coinbase with special index
+        Script Length:         77
+        ScriptSig(hex):        04ffff001d0104455468652054696d65732030332f4a616e2f32303039204368616e63656c6c6f72206f6e206272696e6b206f66207365636f6e64206261696c6f757420666f722062616e6b73
+        Sequence:              4294967295 (== ffffffff, not in use)
+      Output Count:	 1
+      ## Outputs[0] ##
+        Value:                 5,000,000,000 Satoshi (50.0 Bitcoin)
+        Script Len:            67
+        OP_CODE 65 is probably obselete pay to address
+        Pubkey OP_CODE:	 None Bytes:65 tail_op_code:OP_CHECKSIG 
+        Pure Pubkey:	   04678AFDB0FE5548271967F1A67130B7105CD6A828E03909A67962E0EA1F61DEB649F6BC3F4CEF38C4F35504E51EC112DE5C384DF7BA0B8D578A4C702B6BF11D5F
+        ScriptPubkey(hex):     4104678AFDB0FE5548271967F1A67130B7105CD6A828E03909A67962E0EA1F61DEB649F6BC3F4CEF38C4F35504E51EC112DE5C384DF7BA0B8D578A4C702B6BF11D5FAC
+        Lock Time:	 0
+  ########## Transaction Data END ##########
+#################### Blocks[0] END ####################
+
+#################### Blocks[1] BEGIN ####################
+
+  Magic No: 			0XD9B4BEF9
+  Blocksize (bytes): 	215
+
+  ########## Block Header BEGIN ##########
+    Version               1
+    Previous Block Hash   000000000019D6689C085AE165831E934FF763AE46A2A6C172B3F1B60A8CE26F
+    Merkle Root           982051fd1e4ba744bbbe680e1fee14677ba1a3c3540bf7b1cdb606e857233e0e
+    Time stamp            2009-01-09 02:54:25.000000+00:00 (UTC)
+    Difficulty            1.00 (486604799 bits)
+    Nonce                 2573394689
+  ########## Block Header END ##########
+
+  ########## Transaction Count: 1 ##########
+
+  ########## Transaction Data BEGIN ##########
+    ##### Transactions[0] #####
+      Transaction Version:     1
+      Input Count:             1
+      ## Inputs[0] ##
+        Coinbase Text:         0000000000000000000000000000000000000000000000000000000000000000
+        Transaction Out Index: 4294967295  Coinbase with special index
+        Script Length:         7
+        ScriptSig(hex):        04ffff001d0104
+        Sequence:              4294967295 (== ffffffff, not in use)
+      Output Count:	 1
+      ## Outputs[0] ##
+        Value:                 5,000,000,000 Satoshi (50.0 Bitcoin)
+        Script Len:            67
+        OP_CODE 65 is probably obselete pay to address
+        Pubkey OP_CODE:	 None Bytes:65 tail_op_code:OP_CHECKSIG 
+        Pure Pubkey:	   0496B538E853519C726A2C91E61EC11600AE1390813A627C66FB8BE7947BE63C52DA7589379515D4E0A604F8141781E62294721166BF621E73A82CBF2342C858EE
+        ScriptPubkey(hex):     410496B538E853519C726A2C91E61EC11600AE1390813A627C66FB8BE7947BE63C52DA7589379515D4E0A604F8141781E62294721166BF621E73A82CBF2342C858EEAC
+        Lock Time:	 0
+  ########## Transaction Data END ##########
+#################### Blocks[1] END ####################
+
+#################### Blocks[2] BEGIN ####################
+
+  Magic No: 			0XD9B4BEF9
+  Blocksize (bytes): 	215
+
+  ########## Block Header BEGIN ##########
+    Version               1
+    Previous Block Hash   00000000839A8E6886AB5951D76F411475428AFC90947EE320161BBF18EB6048
+    Merkle Root           d5fdcc541e25de1c7a5addedf24858b8bb665c9f36ef744ee42c316022c90f9b
+    Time stamp            2009-01-09 02:55:44.000000+00:00 (UTC)
+    Difficulty            1.00 (486604799 bits)
+    Nonce                 1639830024
+  ########## Block Header END ##########
+
+  ########## Transaction Count: 1 ##########
+
+  ########## Transaction Data BEGIN ##########
+    ##### Transactions[0] #####
+      Transaction Version:     1
+      Input Count:             1
+      ## Inputs[0] ##
+        Coinbase Text:         0000000000000000000000000000000000000000000000000000000000000000
+        Transaction Out Index: 4294967295  Coinbase with special index
+        Script Length:         7
+        ScriptSig(hex):        04ffff001d010b
+        Sequence:              4294967295 (== ffffffff, not in use)
+      Output Count:	 1
+      ## Outputs[0] ##
+        Value:                 5,000,000,000 Satoshi (50.0 Bitcoin)
+        Script Len:            67
+        OP_CODE 65 is probably obselete pay to address
+        Pubkey OP_CODE:	 None Bytes:65 tail_op_code:OP_CHECKSIG 
+        Pure Pubkey:	   047211A824F55B505228E4C3D5194C1FCFAA15A456ABDF37F9B9D97A4040AFC073DEE6C89064984F03385237D92167C13E236446B417AB79A0FCAE412AE3316B77
+        ScriptPubkey(hex):     41047211A824F55B505228E4C3D5194C1FCFAA15A456ABDF37F9B9D97A4040AFC073DEE6C89064984F03385237D92167C13E236446B417AB79A0FCAE412AE3316B77AC
+        Lock Time:	 0
+  ########## Transaction Data END ##########
+#################### Blocks[2] END ####################
+
+#################### Blocks[3] BEGIN ####################
+
+  Magic No: 			0XD9B4BEF9
+  Blocksize (bytes): 	215
+
+  ########## Block Header BEGIN ##########
+    Version               1
+    Previous Block Hash   000000006A625F06636B8BB6AC7B960A8D03705D1ACE08B1A19DA3FDCC99DDBD
+    Merkle Root           44f672226090d85db9a9f2fbfe5f0f9609b387af7be5b7fbb7a1767c831c9e99
+    Time stamp            2009-01-09 03:02:53.000000+00:00 (UTC)
+    Difficulty            1.00 (486604799 bits)
+    Nonce                 1844305925
+  ########## Block Header END ##########
+
+  ########## Transaction Count: 1 ##########
+
+  ########## Transaction Data BEGIN ##########
+    ##### Transactions[0] #####
+      Transaction Version:     1
+      Input Count:             1
+      ## Inputs[0] ##
+        Coinbase Text:         0000000000000000000000000000000000000000000000000000000000000000
+        Transaction Out Index: 4294967295  Coinbase with special index
+        Script Length:         7
+        ScriptSig(hex):        04ffff001d010e
+        Sequence:              4294967295 (== ffffffff, not in use)
+      Output Count:	 1
+      ## Outputs[0] ##
+        Value:                 5,000,000,000 Satoshi (50.0 Bitcoin)
+        Script Len:            67
+        OP_CODE 65 is probably obselete pay to address
+        Pubkey OP_CODE:	 None Bytes:65 tail_op_code:OP_CHECKSIG 
+        Pure Pubkey:	   0494B9D3E76C5B1629ECF97FFF95D7A4BBDAC87CC26099ADA28066C6FF1EB9191223CD897194A08D0C2726C5747F1DB49E8CF90E75DC3E3550AE9B30086F3CD5AA
+        ScriptPubkey(hex):     410494B9D3E76C5B1629ECF97FFF95D7A4BBDAC87CC26099ADA28066C6FF1EB9191223CD897194A08D0C2726C5747F1DB49E8CF90E75DC3E3550AE9B30086F3CD5AAAC
+        Lock Time:	 0
+  ########## Transaction Data END ##########
+#################### Blocks[3] END ####################
+
+
+Reached End of Field
+Parsed 4 blocks

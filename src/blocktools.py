@@ -82,5 +82,6 @@ def varint(stream):
 	raise ValueError('Datafile seems corrupt')
 
 
-def hashStr(bytebuffer):
+def hashStr(bytebuffer: bytes):
+	assert isinstance(bytebuffer, bytes)
 	return bytebuffer.hex().upper()
