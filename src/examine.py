@@ -1,13 +1,12 @@
 #!/usr/bin/python3
 
-from blocktools import *
+from utils import *
 from block import Block, BlockHeader
 
 import argparse
 import io
 import os
 import sys
-
 
 
 def parse(block_reader: io.BufferedReader, start: int, offset: int):
@@ -31,7 +30,7 @@ def parse(block_reader: io.BufferedReader, start: int, offset: int):
 
 		if continue_parsing:
 			print(f"#################### Blocks[{counter-1}] BEGIN ####################")
-			block.toString() # print the block as well
+			block.stdout()
 			print(f"#################### Blocks[{counter-1}] END ####################\n")
 		
 		if counter >= start + offset:
@@ -40,6 +39,7 @@ def parse(block_reader: io.BufferedReader, start: int, offset: int):
 	print('')
 	print('Reached End of Field')
 	print(f"Parsed {counter} blocks")
+
 
 def main():
 
@@ -59,7 +59,6 @@ def main():
 		# rb: Opens the file as read-only in binary format and starts reading from
 		# the beginning of the file.
 		parse(block_reader, start=start, offset=offset)
-
 
 
 if __name__ == '__main__':

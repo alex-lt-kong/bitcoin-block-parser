@@ -1,11 +1,10 @@
-from blocktools import *
+from utils import *
 from opcode import *
 from datetime import datetime
 
 import binascii
-import hashlib
 import io
-import time
+import copy
 
 class BlockHeader:
 
@@ -21,29 +20,51 @@ class BlockHeader:
 		self.bits = read_4bytes_as_uint(block_reader)
 		self.nonce = read_4bytes_as_uint(block_reader)
 
-	def get_current_block_hash(self, ):
-		# The idea is that, we firstly convert strings back to bytes using
+	def get_bytes(self) -> bytes:
+		"""
+		Get original bytes of header of a block. The bytes returns by this method
+		are supposed to be exactly the same as those ones stored in blk*.dat file
+		"""
+		# For string, such as self.prev_blk_hash,
+		# the idea is that, we firstly convert strings back to bytes using
 		# bytes.fromhex() and then we convert bytes from Big-Endian order back
 		# to Little-Endian order with [::-1], so that the order of bytes are exactly 
 		# the same as those stored in blk*.dat file
 
-		assert self.version == 1 or self.version == 2
-		
-		header = (bytes.fromhex(f"0000000{self.version}")[::-1]+
-							bytes.fromhex(self.prev_blk_hash)[::-1]+
-							bytes.fromhex(self.merkle_root)[::-1]+
-							self.timestamp.to_bytes(4, byteorder='little')+ # 4 bytes out, 4 bytes in
-							self.bits.to_bytes(4, byteorder='little')+			# Little-Endian out, Little-Endian in
-							self.nonce.to_bytes(4, byteorder='little'))
+		# For integer, such as self.version, we use biult-in functions to do the same
 
-		hash = hashlib.sha256(hashlib.sha256(header).digest()).digest()
+		# Why do we need to read values one after another and then piece them
+		# together? Well the initial answer is: the original blocktools repository
+		# does it this way, so this project simply follow the design. But it begs 
+		# the question: Can we re-design the entire algorithm to: read everything
+		# in first, calculate the hash and then split the bytes into different
+		# values? The answer is actually no. The reason is that, we don't know
+		# the length of a transaction in advance due to the existence of 
+		# variable-length integers. As a result, the current design, albeit a bit
+		# awkward at the first glance, is actually not as bad.
+
+		array = (self.version.to_bytes(4, byteorder='little') +
+							bytes.fromhex(self.prev_blk_hash)[::-1] +
+							bytes.fromhex(self.merkle_root)[::-1] +
+							self.timestamp.to_bytes(4, byteorder='little') +
+							self.bits.to_bytes(4, byteorder='little') +
+							self.nonce.to_bytes(4, byteorder='little'))
+		return array
+
+
+	def get_current_block_hash(self):
+
+		array = self.get_bytes()
+		hash = double_sha256(array)
 		return bytes_to_hex_string(hash, switch_endianness=True)
 
 
-	def toString(self):
+	def stdout(self):
 		print(f"    Version           {self.version}")
 		print(f"    Prev. Block Hash  {self.prev_blk_hash}")
-		print(f"    Merkle Root       {self.merkle_root}") 
+		print(f"    Merkle Root       {self.merkle_root} (Verified)")
+		# This (Verified) note is hard-coded. The real verification happens
+		# in 
 		print(f"    Timestamp         {self.timestamp} / 0x{self.timestamp:x} / {datetime.utcfromtimestamp(self.timestamp)} (UTC)")
 		print(f"    Difficulty        {difficulty(self.bits):.2f} ({self.bits} bits / 0x{self.bits:x} bits)")
 		print(f"    Nonce             {self.nonce}")
@@ -77,7 +98,7 @@ class Block:
 		
 		if self.has_length(block_reader, self.block_size):
 			self.set_header(block_reader)
-			self.transaction_count = varint(block_reader)
+			self.transaction_count = read_bytes_as_variable_int(block_reader)
 			self.transactions = []
 
 			for i in range(0, self.transaction_count):
@@ -86,7 +107,10 @@ class Block:
 				self.transactions.append(transaction)
 		else:
 			self.continue_parsing = False
-						
+
+		if self.get_merkle_root()[::-1].hex().upper() != self.block_header.merkle_root:
+			raise ValueError("\n" + self.get_merkle_root()[::-1].hex().upper() + "\n" + self.block_header.merkle_root)
+
 
 	def continue_parsing(self):
 		return self.continue_parsing
@@ -113,7 +137,7 @@ class Block:
 	def set_header(self, blockchain):
 		self.block_header = BlockHeader(blockchain)
 
-	def toString(self):
+	def stdout(self):
 		print("")
 		print(f"  Magic No:          {hex(self.magic_number).upper()}") 
 		assert hex(self.magic_number).upper() == "0XD9B4BEF9"
@@ -122,27 +146,51 @@ class Block:
 		print(f"  Curr. Block Hash:  {self.block_header.get_current_block_hash()} (Calculated)")
 		print("")
 		print("  ########## Block Header BEGIN ##########")
-		self.block_header.toString()
+		self.block_header.stdout()
 		print("  ########## Block Header END ##########\n")
 		print(f"  ########## Transaction Count: {self.transaction_count} ##########\n")
 		print("  ########## Transaction Data BEGIN ##########")
 		for t in self.transactions:
-			t.toString()
+			t.stdout()
 		print("  ########## Transaction Data END ##########")
+	
+	def get_merkle_root(self):
+		digests = []
+		for t in self.transactions:
+			digests.append(double_sha256(t.get_bytes()))
+
+		while True:
+			digests_copy = copy.deepcopy(digests)
+			
+
+			if len(digests_copy) == 1:
+				return digests_copy[0]
+			if len(digests_copy) % 2 != 0:
+				digests_copy.append(digests[-1])
+
+			digests.clear()
+			pos = 0
+			while pos + 1 < len(digests_copy):
+				digests.append(double_sha256(digests_copy[pos] + digests_copy[pos+1]))
+				pos += 2
+			if pos == 0:
+				break
+
 
 
 class Transaction:
+
 	def __init__(self, blockchain: io.BufferedReader):
 		assert isinstance(blockchain, io.BufferedReader)
 		cur_pos = blockchain.tell()
 		self.version = read_4bytes_as_uint(blockchain)
-		self.input_count = varint(blockchain)
+		self.input_count = read_bytes_as_variable_int(blockchain)
 		self.inputs = []
 		self.seq = 1
 		for i in range(0, self.input_count):
 			input = txInput(blockchain)
 			self.inputs.append(input)
-		self.outCount = varint(blockchain)
+		self.outCount = read_bytes_as_variable_int(blockchain)
 		self.outputs = []
 		if self.outCount > 0:
 			for i in range(0, self.outCount):
@@ -151,26 +199,64 @@ class Transaction:
 		self.lockTime = read_4bytes_as_uint(blockchain)
 
 		
-	def toString(self):
+	def stdout(self):
 		print(f"    ##### Transactions[{self.seq}] #####")
 		print(f"      Transaction Version:     {self.version}")
 		print(f"      Input Count:             {self.input_count}")
 		for i in range(len(self.inputs)):
 			self.inputs[i].toString(i)
 
-		print(f"      Output Count:\t {self.outCount}")
+		print(f"      Output Count:            {self.outCount}")
 		for i in range(len(self.outputs)):
-			self.outputs[i].toString(i)
-		print(f"        Lock Time:\t {self.lockTime}")
+			self.outputs[i].stdout(i)
+		print(f"        Lock Time:             {self.lockTime}")
+
+
+	def get_bytes(self):
+		"""
+		Get original bytes of the transaction section of a block.
+		The bytes returns by this method are supposed to be exactly the
+		same as those ones stored in blk*.dat file
+		"""
+
+		# The basic idea here is the same as BlockHeader.get_bytes()
+
+
+		array = (self.version.to_bytes(4, byteorder='little') + get_bytes_from_variable_int(self.input_count))
+		for i in range(len(self.inputs)):
+			array += self.inputs[i].get_bytes()
+
+		array += get_bytes_from_variable_int(self.outCount)
+		for i in range(len(self.outputs)):
+			array += self.outputs[i].get_bytes()
+		array += self.lockTime.to_bytes(4, byteorder='little')	
+		return array
+
 
 class txInput:
-	def __init__(self, blockchain: io.BufferedReader):
-		assert isinstance(blockchain, io.BufferedReader)
-		self.prev_transaction_hash = read_32bytes(blockchain)
-		self.txOutId = read_4bytes_as_uint(blockchain)
-		self.script_length = varint(blockchain)
-		self.scriptSig = blockchain.read(self.script_length)
-		self.seqNo = read_4bytes_as_uint(blockchain)
+	def __init__(self, block_reader: io.BufferedReader):
+		assert isinstance(block_reader, io.BufferedReader)
+		self.prev_tx_hash = read_32bytes(block_reader)
+		self.txOutId = read_4bytes_as_uint(block_reader)
+		self.script_length = read_bytes_as_variable_int(block_reader)
+		self.scriptSig = block_reader.read(self.script_length)
+		self.seqNo = read_4bytes_as_uint(block_reader)
+
+	def get_bytes(self):
+		"""
+		Get original bytes of the inputs of a transaction.
+		The bytes returns by this method are supposed to be exactly the
+		same as those ones stored in blk*.dat file
+		"""
+		# The basic idea here is the same as BlockHeader.get_bytes()	
+		array = (self.prev_tx_hash[::-1]+
+							self.txOutId.to_bytes(4, byteorder='little') +
+							get_bytes_from_variable_int(self.script_length) +
+							self.scriptSig +
+							self.seqNo.to_bytes(4, byteorder='little'))
+
+		return array
+
 
 	def toString(self, idx):
 		print(f"      ## Inputs[{idx}] ##")
@@ -202,23 +288,33 @@ class txInput:
 		s = ""
 		if(idx == 0xffffffff):
 			s = " Coinbase with special index"
-			print(f"        Coinbase Text:         {bytes_to_hex_string(self.prev_transaction_hash)}")
+			print(f"        Coinbase Text:         {bytes_to_hex_string(self.prev_tx_hash)}")
 		else: 
-			print(f"        Prev. Tx Hash:         {bytes_to_hex_string(self.prev_transaction_hash)}")
+			print(f"        Prev. Tx Hash:         {bytes_to_hex_string(self.prev_tx_hash)}")
 		return f"{int(idx)} {s}"
 		
 
 class txOutput:
 	def __init__(self, blockchain):	
 		self.value = uint8(blockchain)
-		self.scriptLen = varint(blockchain)
+		self.scriptLen = read_bytes_as_variable_int(blockchain)
 		self.pubkey = blockchain.read(self.scriptLen)
 
-	def toString(self, idx):
+	def get_bytes(self):
+		array = (self.value.to_bytes(8, byteorder='little')+
+						 get_bytes_from_variable_int(self.scriptLen) +
+						 self.pubkey)
+
+		return array
+
+
+	def stdout(self, idx):
 		print(f"      ## Outputs[{idx}] ##")
 		print(f"        Value:                 {self.value:,} Satoshi ({self.value / 100_000_000} Bitcoin)")
 		print(f"        Script Len:            {self.scriptLen}")
 		print(f"        ScriptPubkey(hex):     {self.decodeScriptPubkey(self.pubkey)}")
+
+
 	def decodeScriptPubkey(self,data):
 		hexstr = bytes_to_hex_string(data)
 		op_idx = int(hexstr[0:2], base=16)

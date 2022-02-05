@@ -2,12 +2,16 @@ import io
 import struct
 from hashlib import *
 import base58
+import hashlib
 
 # * Native byte order is big-endian or little-endian, depending on the host system.
 #   For example, Intel x86 and AMD64 (x86-64) are little-endian;
 #   Motorola 68000 and PowerPC G5 are big-endian;
 #   ARM and Intel Itanium feature switchable endianness (bi-endian).
 #   Use sys.byteorder to check the endianness of your system.
+
+
+
 
 class Pubkey2Address:
 	@staticmethod
@@ -28,6 +32,9 @@ class Pubkey2Address:
 			pubkey_hash = h.digest()
 			return Pubkey2Address.ConvertPKHToAddress(b'\x00', pubkey_hash)
 
+def double_sha256(array: bytes):
+	assert isinstance(array, bytes)
+	return hashlib.sha256(hashlib.sha256(array).digest()).digest()
 
 def nbits(num):
   # Convert integer to hex
@@ -42,15 +49,14 @@ def difficulty(num):
   return 0x00ffff0000000000000000000000000000000000000000000000000000 / nbits(num)
 
 
-def uint1(stream):
-	return ord(stream.read(1))
-
-def uint2(stream):
-	return struct.unpack('H', stream.read(2))[0]
+def read_2bytes_as_uint(reader):
+	res = struct.unpack('<H', reader.read(2))[0]
+	return res
 
 def read_4bytes_as_uint(reader: io.BufferedReader) -> int:
 	assert isinstance(reader, io.BufferedReader)
 	res = struct.unpack('<I', reader.read(4))[0]
+
 	# format string 'I' means unsigned int and '<' means read bytes following
 	# little-endian byte order.
 	# So there we io.BufferedReader.read() 4 bytes from the stream 
@@ -65,8 +71,6 @@ def read_4bytes_as_uint(reader: io.BufferedReader) -> int:
 	# can expand to the limit of the available memory.
 	return res
 
-
-
 def uint8(stream):
 	return struct.unpack('Q', stream.read(8))[0]
 
@@ -76,14 +80,11 @@ def read_32bytes(reader, to_big_endian=True):
 	# slice syntax: array[ <first element to include> : <first element to exclude> : <step>]
 	# so if we want Big Endian, we use step=-1
 	array = reader.read(32)[::-1 if to_big_endian else 1]
-	assert(array, bytes)
+	assert isinstance(array, bytes)
 	return array
 
-def time(stream):
-	time = read_4bytes_as_uint(stream)
-	return time
-
-def varint(stream):
+def read_bytes_as_variable_int(reader: io.BufferedReader):
+	assert isinstance(reader, io.BufferedReader)
 	# seems the rule is like this:
 	# * If the number < 253 (0xFD), store it in 1 byte, left-padded with zeros.
   # * If the number fits in 16 bits (but is greater than 252), store it in 3 
@@ -93,16 +94,16 @@ def varint(stream):
 	# * If the number fits in 64 bits (but not 8, 16, or 32), store it in 9 bytes:
 	#   a 1-byte value 255 (0xFF) followed by the 8 byte little-endian number
 	# reference: https://reference.cash/protocol/formats/variable-length-integer
-	size = uint1(stream)
+	size = ord(reader.read(1))
 
 	if size < 0xfd: # decimal 253, binary 11111101
 		return size
 	if size == 0xfd: # decimal 253, binary 11111101
-		return uint2(stream)
+		return read_2bytes_as_uint(reader)
 	if size == 0xfe: # decimal 254, binary 11111110
-		return read_4bytes_as_uint(stream)
+		return read_4bytes_as_uint(reader)
 	if size == 0xff: # decimal 255, binary 11111111
-		return uint8(stream)
+		return uint8(reader)
 	raise ValueError('Datafile seems corrupt')
 
 
@@ -113,3 +114,20 @@ def bytes_to_hex_string(array: bytes, switch_endianness=False) -> str:
 	# step=-1 basically means we reverse the order of the bytes.
 
 
+def get_bytes_from_variable_int(varint: int) -> bytes:
+	'''
+	The reverse of read_bytes_as_variable_int(): we get the bytes representation
+	of a variable-length integer
+	'''
+
+	if varint < 0xfd:
+		varint_bytes = varint.to_bytes(1, byteorder='little')
+	elif varint < 2**16: # Not quite sure if there should be < or <= ...
+		varint_bytes = (0xfd).to_bytes(1, byteorder='little') + struct.pack("<H", varint)
+	elif varint < 2**32:
+		varint_bytes = (0xfe).to_bytes(1, byteorder='little') + struct.pack("<I", varint) 
+	elif varint < 2**64:
+		varint_bytes = (0xff).to_bytes(1, byteorder='little') + struct.pack("Q", varint)
+	else:
+		raise ValueError(f'{varint} seems invalid for the purpose of Bitcoin')
+	return varint_bytes
