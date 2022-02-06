@@ -74,7 +74,7 @@ def read_4bytes_as_uint(reader: io.BufferedReader) -> int:
 def uint8(stream):
 	return struct.unpack('Q', stream.read(8))[0]
 
-def read_32bytes(reader, to_big_endian=True):
+def read_32bytes(reader, to_big_endian=False):
 	assert isinstance(reader, io.BufferedReader)
 	# My understanding is that Bitcoin Core stores data in little-endian order,
 	# slice syntax: array[ <first element to include> : <first element to exclude> : <step>]
@@ -131,3 +131,28 @@ def get_bytes_from_variable_int(varint: int) -> bytes:
 	else:
 		raise ValueError(f'{varint} seems invalid for the purpose of Bitcoin')
 	return varint_bytes
+
+def get_target_hash_by_difficulty(difficulty: bytes) -> int:
+	"""
+	Calculate target hash given Difficulty as Little-Endian bytes. A valid
+	hash generated from a given nonce should always smaller than the target hash.
+	The formula	is directly from the semi-official Bitcoin Wiki:
+	https://en.bitcoin.it/wiki/Difficulty#How_is_difficulty_stored_in_blocks.3F
+	"""
+	assert isinstance(difficulty, bytes) and len(difficulty) == 4
+	exponent = difficulty[3]
+	coef = int.from_bytes(difficulty[0:3], byteorder='little')
+	res = coef * 2**(8*(exponent - 3))
+	assert isinstance(res, int)
+	return res
+
+def convert_endianness(array: bytes):
+	"""
+	Switch between big-endian order and little-endian order. 
+	Bitcoin stores bytes in little-endian byte order but we human beings are 
+	more comfortable with big-endian one. Therefore, we convert the endianness
+	before showing values to users.
+	Note that bytes objects are immutable
+	"""
+	assert isinstance(array, bytes)
+	return array[::-1]
