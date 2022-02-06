@@ -175,8 +175,8 @@ class Block:
 		# seems this is something hard-coded		
 		
 		print(f"  Blocksize (bytes): {self.block_size}")
-		print(f"  Curr. Block Hash:  {utils.convert_endianness(self.curr_block_hash).hex()} (Derived from block)")
-		print(f"  Target Hash        {self.block_header.target_hash:064x} (Derived from block)")
+		print(f"  Curr. Block Hash:  {utils.convert_endianness(self.curr_block_hash).hex()} (Derived from header)")
+		print(f"  Target Hash        {self.block_header.target_hash:064x} (Derived from Difficulty)")
 		print("")
 		print("  ########## Block Header BEGIN ##########")
 		self.block_header.stdout()
@@ -319,7 +319,7 @@ class txInput:
 			return hexstr
 		else: 
 			pubkey = hexstr[2+scriptLen+2:] # very critical change
-			print(f"        Pubkey:              {pubkey} (Addr: {utils.Pubkey2Address.PubkeyToAddress(pubkey)})")
+			print(f"        Pubkey:                {pubkey} (Addr: {utils.Pubkey2Address.PubkeyToAddress(pubkey)})")
 #		return hexstr
 
 	def decodeOutIdx(self,idx):
@@ -364,7 +364,7 @@ class txOutput:
 			op_codeTail = OPCODE_NAMES[int(hexstr[2+keylen*2:2+keylen*2+2],16)]
 			print("        Pubkey OP_CODE:\t " "None " + "Bytes:%d " % keylen +\
 					"tail_op_code:" +  op_codeTail + " " )
-			print("        Pure Pubkey:\t   %s" % hexstr[2:2+keylen*2])
+			print("        Pure Pubkey:        %s" % hexstr[2:2+keylen*2])
 			return hexstr
 		if op_code1 == "OP_DUP":  #P2PKHA pay to pubkey hash mode
 			print("        Transaction Type:      Pay-to-PubkeyHash (P2PKH)")
@@ -380,7 +380,7 @@ class txOutput:
 			op_codeTail = OPCODE_NAMES[int(hexstr[4+keylen*2:4+keylen*2+2],16)]
 			print("         Pubkey OP_CODE:\t " + op_code1 + " " + " " + "Bytes:%d " % keylen +\
 					"tail_op_code:" +  op_codeTail + " " )
-			print("        Pure Pubkey:\t     %s" % hexstr[4:4+keylen*2])
+			print("        Pure Pubkey:          %s" % hexstr[4:4+keylen*2])
 			return hexstr
 		else: #TODO extend for multi-signature parsing 
 			print("\t Need to extend multi-signatuer parsing %x" % int(hexstr[0:2],16) + op_code1)
