@@ -274,6 +274,8 @@ class txInput:
 	The raw (i.e. little-endian) Previous Transaction hash bytes value directly
 	read from data file as defined in	https://en.bitcoin.it/wiki/Transaction#Generation.
 	"""
+	signature = None
+	pubkey = None
 
 	def __init__(self, block_reader: io.BufferedReader):
 		assert isinstance(block_reader, io.BufferedReader)
@@ -285,6 +287,7 @@ class txInput:
 		# script_sig consists of a <sig> field (i.e., a signature) and
 		# a <pubkey> field (i.e, a public key).
 		self.seqNo = utils.read_4bytes_as_uint(block_reader)
+		self.parse_script_sig()
 
 	def get_bytes(self):
 		"""
@@ -310,14 +313,19 @@ class txInput:
 			print(f"        Coinbase Text:         {utils.convert_endianness(self.prev_tx_hash).hex()}")
 		else: 
 			print(f"        Prev. Tx Hash:         {utils.convert_endianness(self.prev_tx_hash).hex()}")
-		print( f"        Tx Out Index:          {int(self.txOutId)} {s}")
-		self.decodeScriptSig(self.script_sig)
+		print(f"        Tx Out Index:          {int(self.txOutId)} {s}")
+		print(f"        Signature:             {self.signature}")
+		if self.pubkey is not None:
+			print(f"        Address:               {utils.Pubkey2Address.PubkeyToAddress(self.pubkey)} (HASH160: {utils.get_pubkey_hash(self.pubkey).hex()} Pubkey: {self.pubkey})")
+		else:
+			print(" Script op_code is not SIGHASH_ALL")
+		
 		
 	  #	assert self.seqNo == 4294967295
 		print(f"        Sequence:              {self.seqNo} (== ffffffff, not in use)")
 
-	def decodeScriptSig(self, data):
-		hexstr = data.hex()
+	def parse_script_sig(self):
+		hexstr = self.script_sig.hex()
 		if 0xffffffff == self.txOutId: #Coinbase
 			return
 		script_length = int(hexstr[0:2], 16) * 2
@@ -325,13 +333,13 @@ class txInput:
 		# of bytes but here we need the number of char and two hex chars are used
 		# to represent one byte.
 		r, s, ht = utils.SignatureParser.dissect_signature(hexstr[2:2+script_length])
-		signature = r[2:] + s
-		print(f"        Signature:             {signature}")
+		self.signature = r[2:] + s
+		
 		if SIGHASH_ALL != int(hexstr[script_length:script_length+2],16): # should be 0x01
-			print("\t Script op_code is not SIGHASH_ALL")
+			pass
 		else: 
-			pubkey = hexstr[2+script_length+2:] # very critical change
-			print(f"        Address:               {utils.Pubkey2Address.PubkeyToAddress(pubkey)} (HASH160: {utils.get_pubkey_hash(pubkey).hex()} Pubkey: {pubkey})")
+			self.pubkey = hexstr[2+script_length+2:]
+			
 
 		
 
