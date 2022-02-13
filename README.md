@@ -43,6 +43,8 @@ python3 ./src/examine.py --file-path=~/bitcoin/blocks/blk00003.dat --start 5 --o
 * Change formatting and indentation to make the output more structured.
 * Calculate and show the hash of the current block and `Merkle root`.
 * Calculate and show the target hash from `Difficulty`.
+* Parse and show the `DER`-encoded signature.
+* Implement a standalone transaction verifier.
 
 ### Notes
 
