@@ -213,7 +213,7 @@ class Transaction:
 
 	def __init__(self, blockchain: io.BufferedReader):
 		assert isinstance(blockchain, io.BufferedReader)
-		cur_pos = blockchain.tell()
+
 		self.version = utils.read_4bytes_as_uint(blockchain)
 		self.input_count = utils.read_bytes_as_variable_int(blockchain)
 		self.inputs = []
@@ -229,13 +229,16 @@ class Transaction:
 				self.outputs.append(output)	
 		self.lockTime = utils.read_4bytes_as_uint(blockchain)
 
+		self.tx_hash = utils.convert_endianness(utils.double_sha256(self.get_bytes())).hex()
+
 		
 	def stdout(self):
 		print(f"    ##### Transactions[{self.seq}] #####")
 		print(f"      Transaction Version:     {self.version}")
+		print(f"      Curr. Tx Hash:           {self.tx_hash} (Derived from block and unverified)")
 		print(f"      Input Count:             {self.input_count}")
 		for i in range(len(self.inputs)):
-			self.inputs[i].toString(i)
+			self.inputs[i].stdout(i)
 
 		print(f"      Output Count:            {self.outCount}")
 		for i in range(len(self.outputs)):
@@ -277,7 +280,10 @@ class txInput:
 		self.prev_tx_hash = utils.read_32bytes(block_reader)
 		self.txOutId = utils.read_4bytes_as_uint(block_reader)
 		self.script_length = utils.read_bytes_as_variable_int(block_reader)
-		self.scriptSig = block_reader.read(self.script_length)
+		self.script_sig = block_reader.read(self.script_length)
+		# According to https://en.bitcoin.it/wiki/Transaction#Pay-to-PubkeyHash,
+		# script_sig consists of a <sig> field (i.e., a signature) and
+		# a <pubkey> field (i.e, a public key).
 		self.seqNo = utils.read_4bytes_as_uint(block_reader)
 
 	def get_bytes(self):
@@ -290,46 +296,41 @@ class txInput:
 		array = (self.prev_tx_hash +
 							self.txOutId.to_bytes(4, byteorder='little') +
 							utils.get_bytes_from_variable_int(self.script_length) +
-							self.scriptSig +
+							self.script_sig +
 							self.seqNo.to_bytes(4, byteorder='little'))
 
 		return array
 
 
-	def toString(self, idx):
+	def stdout(self, idx):
 		print(f"      ## Inputs[{idx}] ##")
-		print(f"        Transaction Out Index: {self.decodeOutIdx(self.txOutId)}")
-		print(f"        Script Length:         {self.script_length}")
-		self.decodeScriptSig(self.scriptSig)
-		print(f"        ScriptSig(hex):        {self.scriptSig.hex()}")
+		s = ""
+		if(self.txOutId == 0xffffffff):
+			s = " Coinbase with special index"
+			print(f"        Coinbase Text:         {utils.convert_endianness(self.prev_tx_hash).hex()}")
+		else: 
+			print(f"        Prev. Tx Hash:         {utils.convert_endianness(self.prev_tx_hash).hex()}")
+		print( f"        Tx Out Index:          {int(self.txOutId)} {s}")
+		#print(f"        Tx Out Index:          {self.decodeOutIdx(self.txOutId)}")
+		self.decodeScriptSig(self.script_sig)
 		
 	  #	assert self.seqNo == 4294967295
 		print(f"        Sequence:              {self.seqNo} (== ffffffff, not in use)")
 
 	def decodeScriptSig(self, data):
-		hexstr = utils.bytes_to_hex_string(data)
+		hexstr = data.hex()
 		if 0xffffffff == self.txOutId: #Coinbase
-			return hexstr
+			return
 		scriptLen = int(hexstr[0:2],16)
 		scriptLen *= 2
-		script = hexstr[2:2+scriptLen] 
-		print(f"        Script:                {script}")
+		signature = hexstr[2:2+scriptLen] 
+		print(f"        Signature:             {signature}")
 		if SIGHASH_ALL != int(hexstr[scriptLen:scriptLen+2],16): # should be 0x01
 			print("\t Script op_code is not SIGHASH_ALL")
-			return hexstr
 		else: 
 			pubkey = hexstr[2+scriptLen+2:] # very critical change
-			print(f"        Pubkey:                {pubkey} (Addr: {utils.Pubkey2Address.PubkeyToAddress(pubkey)})")
-#		return hexstr
+			print(f"        Address:               {utils.Pubkey2Address.PubkeyToAddress(pubkey)} (HASH160: {utils.get_pubkey_hash(pubkey).hex()} Pubkey: {pubkey})")
 
-	def decodeOutIdx(self,idx):
-		s = ""
-		if(idx == 0xffffffff):
-			s = " Coinbase with special index"
-			print(f"        Coinbase Text:         {utils.convert_endianness(self.prev_tx_hash).hex()}")
-		else: 
-			print(f"        Prev. Tx Hash:         {utils.convert_endianness(self.prev_tx_hash).hex()}")
-		return f"{int(idx)} {s}"
 		
 
 class txOutput:
@@ -354,7 +355,7 @@ class txOutput:
 
 
 	def decodeScriptPubkey(self,data):
-		hexstr = utils.bytes_to_hex_string(data)
+		hexstr = data.hex()
 		op_idx = int(hexstr[0:2], base=16)
 		try: 
 			op_code1 = OPCODE_NAMES[op_idx]

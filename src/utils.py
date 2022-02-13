@@ -15,26 +15,37 @@ import hashlib
 
 class Pubkey2Address:
 	@staticmethod
-	def SHA256D(bstr):
-			return sha256(sha256(bstr).digest()).digest()
-
-	@staticmethod
-	def ConvertPKHToAddress(prefix, addr):
+	def convert_public_key_hash_to_address(prefix, addr):
 			data = prefix + addr
-			return base58.b58encode(data + Pubkey2Address.SHA256D(data)[:4])
+			return base58.b58encode(data + double_sha256(data)[:4])
 
 	@staticmethod
-	def PubkeyToAddress(pubkey_hex):
-			pubkey = bytearray.fromhex(pubkey_hex)
-			round1 = sha256(pubkey).digest()
-			h = new('ripemd160')
-			h.update(round1)
-			pubkey_hash = h.digest()
-			return Pubkey2Address.ConvertPKHToAddress(b'\x00', pubkey_hash)
+	def PubkeyToAddress(pubkey_hex):			
+			return Pubkey2Address.convert_public_key_hash_to_address(b'\x00', get_pubkey_hash(pubkey_hex))
+			
+def get_pubkey_hash(pubkey_hex):
+	"""
+	Implements the OP_HASH160 operation in Bitcoin script
+	"""
+	pubkey = bytearray.fromhex(pubkey_hex)
+	round1 = sha256(pubkey).digest()
+	h = new('ripemd160')
+	h.update(round1)
+	pubkey_hash = h.digest()
+	return pubkey_hash
 
-def double_sha256(array: bytes):
+def double_sha256(array: bytes) -> bytes:
+	"""
+	Calcuate the SHA256 checksum of a bytes array twice.
+	This method returns a bytes array and does not handle endianness.
+	To get the hexadecimal representation of the bytes array with the preferred
+	endianness, call:
+	utils.convert_endianness(results).hex()
+	"""
 	assert isinstance(array, bytes)
-	return hashlib.sha256(hashlib.sha256(array).digest()).digest()
+	results = hashlib.sha256(hashlib.sha256(array).digest()).digest()
+	assert isinstance(results, bytes)
+	return results
 
 def nbits(num):
   # Convert integer to hex
@@ -105,13 +116,6 @@ def read_bytes_as_variable_int(reader: io.BufferedReader):
 	if size == 0xff: # decimal 255, binary 11111111
 		return uint8(reader)
 	raise ValueError('Datafile seems corrupt')
-
-
-def bytes_to_hex_string(array: bytes, switch_endianness=False) -> str:
-	assert isinstance(array, bytes)
-	return array[::-1 if switch_endianness else 1].hex().upper()
-	# array[ <first element to include> : <first element to exclude> : <step>]
-	# step=-1 basically means we reverse the order of the bytes.
 
 
 def get_bytes_from_variable_int(varint: int) -> bytes:
