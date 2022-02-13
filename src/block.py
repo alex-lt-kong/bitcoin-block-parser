@@ -311,7 +311,6 @@ class txInput:
 		else: 
 			print(f"        Prev. Tx Hash:         {utils.convert_endianness(self.prev_tx_hash).hex()}")
 		print( f"        Tx Out Index:          {int(self.txOutId)} {s}")
-		#print(f"        Tx Out Index:          {self.decodeOutIdx(self.txOutId)}")
 		self.decodeScriptSig(self.script_sig)
 		
 	  #	assert self.seqNo == 4294967295
@@ -321,14 +320,17 @@ class txInput:
 		hexstr = data.hex()
 		if 0xffffffff == self.txOutId: #Coinbase
 			return
-		scriptLen = int(hexstr[0:2],16)
-		scriptLen *= 2
-		signature = hexstr[2:2+scriptLen] 
+		script_length = int(hexstr[0:2], 16) * 2
+		# Why x2? My understanding is that in dat file length meansures the number
+		# of bytes but here we need the number of char and two hex chars are used
+		# to represent one byte.
+		r, s, ht = utils.SignatureParser.dissect_signature(hexstr[2:2+script_length])
+		signature = r[2:] + s
 		print(f"        Signature:             {signature}")
-		if SIGHASH_ALL != int(hexstr[scriptLen:scriptLen+2],16): # should be 0x01
+		if SIGHASH_ALL != int(hexstr[script_length:script_length+2],16): # should be 0x01
 			print("\t Script op_code is not SIGHASH_ALL")
 		else: 
-			pubkey = hexstr[2+scriptLen+2:] # very critical change
+			pubkey = hexstr[2+script_length+2:] # very critical change
 			print(f"        Address:               {utils.Pubkey2Address.PubkeyToAddress(pubkey)} (HASH160: {utils.get_pubkey_hash(pubkey).hex()} Pubkey: {pubkey})")
 
 		

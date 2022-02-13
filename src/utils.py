@@ -10,7 +10,59 @@ import hashlib
 #   ARM and Intel Itanium feature switchable endianness (bi-endian).
 #   Use sys.byteorder to check the endianness of your system.
 
+class SignatureParser:
+	@staticmethod
+	def parse_element(hex_str, offset, element_size):
+		"""
+		:param hex_str: string to parse the element from.
+		:type hex_str: hex str
+		:param offset: initial position of the object inside the hex_str.
+		:type offset: int
+		:param element_size: size of the element to extract.
+		:type element_size: int
+		:return: The extracted element from the provided string, and the updated offset after extracting it.
+		:rtype tuple(str, int)
+		"""
 
+		return hex_str[offset:offset+element_size], offset+element_size
+
+	@staticmethod
+	def dissect_signature(hex_sig):
+			"""
+			Extracts the r, s and ht components from a Bitcoin ECDSA signature.
+			:param hex_sig: Signature in  hex format.
+			:type hex_sig: hex str
+			:return: r, s, t as a tuple.
+			:rtype: tuple(str, str, str)
+			It is from this link: https://bitcoin.stackexchange.com/questions/58853/how-do-you-figure-out-the-r-and-s-out-of-a-signature-using-python
+			"""
+
+			offset = 0
+			# Check the sig contains at least the size and sequence marker
+			assert len(hex_sig) > 4, "Wrong signature format."
+			sequence, offset = SignatureParser.parse_element(hex_sig, offset, 2)
+			# Check sequence marker is correct
+			assert sequence == '30', "Wrong sequence marker."
+			signature_length, offset = SignatureParser.parse_element(hex_sig, offset, 2)
+			# Check the length of the remaining part matches the length of the signature + the length of the hashflag (1 byte)
+			assert len(hex_sig[offset:])/2 == int(signature_length, 16) + 1, "Wrong length."
+			# Get r
+			marker, offset = SignatureParser.parse_element(hex_sig, offset, 2)
+			assert marker == '02', "Wrong r marker."
+			len_r, offset = SignatureParser.parse_element(hex_sig, offset, 2)
+			len_r_int = int(len_r, 16) * 2   # Each byte represents 2 characters
+			r, offset = SignatureParser.parse_element(hex_sig, offset, len_r_int)
+			# Get s
+			marker, offset = SignatureParser.parse_element(hex_sig, offset, 2)
+			assert marker == '02', "Wrong s marker."
+			len_s, offset = SignatureParser.parse_element(hex_sig, offset, 2)
+			len_s_int = int(len_s, 16) * 2  # Each byte represents 2 characters
+			s, offset = SignatureParser.parse_element(hex_sig, offset, len_s_int)
+			# Get hashtype
+			ht, offset = SignatureParser.parse_element(hex_sig, offset, 2)
+			assert offset == len(hex_sig), "Wrong parsing."
+
+			return r, s, ht
 
 
 class Pubkey2Address:
